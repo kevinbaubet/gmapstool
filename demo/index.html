@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>GmapsTool</title>
+        <link rel="stylesheet" href="demo.css" />
+
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" ></script>
+        <script src="https://maps.googleapis.com/maps/api/js"></script>
+
+        <script src="../src/gmapstool.js"></script>
+        <script src="../libs/richmarker.min.js"></script>
+        <script src="../libs/markerclusterer.min.js"></script>
+        <script>
+            jQuery(document).ready(function($) {
+                var center = [46.0234844, -0.8266959];
+                var elements = {
+                    mapClassic: $('#gmap-classic'),
+                    mapMarkers: $('#gmap-markers'),
+                    mapLayers: $('#gmap-layers'),
+                    mapCustom: $('#gmap-custom'),
+                    mapCustomControls: $('#gmap-custom-controls')
+                };
+
+                /**
+                 * Classique
+                 */
+                var gmapClassic = elements.mapClassic.gmapsTool({
+                    center: center
+                });
+                gmapClassic.init();
+
+                /**
+                 * Marqueurs
+                 */
+                var gmapMarkers = elements.mapMarkers.gmapsTool({
+                    center: center
+                });
+                gmapMarkers.init();
+
+                var markerIcon1 = $('<span>', {
+                    class: 'marker marker--icon',
+                    html: '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24"><path fill="#ff5a60" d="M12 0c-3.148 0-6 2.553-6 5.702 0 3.148 2.602 6.907 6 12.298 3.398-5.391 6-9.15 6-12.298 0-3.149-2.851-5.702-6-5.702zm0 8c-1.105 0-2-.895-2-2s.895-2 2-2 2 .895 2 2-.895 2-2 2zm4 14.5c0 .828-1.79 1.5-4 1.5s-4-.672-4-1.5 1.79-1.5 4-1.5 4 .672 4 1.5z"/></svg>'
+                });
+                var markerIcon2 = $('<span>', {
+                    class: 'marker marker--icon',
+                    html: '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24"><path fill="black" d="M12 0c-3.148 0-6 2.553-6 5.702 0 3.148 2.602 6.907 6 12.298 3.398-5.391 6-9.15 6-12.298 0-3.149-2.851-5.702-6-5.702zm0 8c-1.105 0-2-.895-2-2s.895-2 2-2 2 .895 2 2-.895 2-2 2zm4 14.5c0 .828-1.79 1.5-4 1.5s-4-.672-4-1.5 1.79-1.5 4-1.5 4 .672 4 1.5z"/></svg>'
+                });
+                var markerIcon3 = $('<span>', {
+                    class: 'marker marker--icon',
+                    html: '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24"><path fill="#303748" d="M12 0c-3.148 0-6 2.553-6 5.702 0 3.148 2.602 6.907 6 12.298 3.398-5.391 6-9.15 6-12.298 0-3.149-2.851-5.702-6-5.702zm0 8c-1.105 0-2-.895-2-2s.895-2 2-2 2 .895 2 2-.895 2-2 2zm4 14.5c0 .828-1.79 1.5-4 1.5s-4-.672-4-1.5 1.79-1.5 4-1.5 4 .672 4 1.5z"/></svg>'
+                });
+                var markers = [
+                    {position: center, content: markerIcon1},
+                    {position: [46.1620606, -1.1765508], content: markerIcon2},
+                    {position: [46.021044, -0.8681477], content: markerIcon3}
+                ];
+                gmapMarkers.setMarkers(markers, {
+                    cluster: true,
+                    clusterOptions: {
+                        imagePath: 'images/m'
+                    }
+                });
+
+                /**
+                 * Layers
+                 */
+                var gmapLayers = elements.mapLayers.gmapsTool({
+                    center: center
+                });
+                gmapLayers.init();
+
+                var layers = [
+                    {path: 'http://kevinbaubet.fr/js/gmapstool/demo/kml/example.kml'}
+                ];
+                gmapLayers.setLayers(layers);
+
+                /**
+                 * Personnalisée
+                 */
+                var gmapCustom = elements.mapCustom.gmapsTool({
+                    center: center
+                });
+                gmapCustom.init();
+                gmapCustom.setStyles('../demo/styles/style.json');
+                gmapCustom.setControls({
+                    zoom: {
+                        in: elements.mapCustomControls.find('button.control-zoom-in'),
+                        out: elements.mapCustomControls.find('button.control-zoom-out')
+                    }
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <div class="page">
+            <h1>GMaps Tool</h1>
+
+            <div class="demo-item">
+                <h2>Carte classique</h2>
+                <div id="gmap-classic" class="gmapstool-gmapWrapper"></div>
+            </div>
+            <div class="demo-item">
+                <h2>Carte avec marqueurs et cluster</h2>
+                <div id="gmap-markers" class="gmapstool-gmapWrapper"></div>
+            </div>
+
+            <div class="demo-item">
+                <h2>Carte avec des calques</h2>
+                <div id="gmap-layers" class="gmapstool-gmapWrapper"></div>
+            </div>
+            <div class="demo-item">
+                <h2>Carte personnalisée</h2>
+                <div id="gmap-custom" class="gmapstool-gmapWrapper"></div>
+                <nav id="gmap-custom-controls">
+                    <button class="gmapstool-control control-zoom-in">+</button>
+                    <button class="gmapstool-control control-zoom-out">-</button>
+                </nav>
+            </div>
+        </div>
+    </body>
+</html>

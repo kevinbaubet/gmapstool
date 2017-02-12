@@ -1,0 +1,81 @@
+/* Global */
+body {
+    margin: 0;
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+    font-size: .75em;
+    background: #303748;
+}
+body:after {
+    content: "";
+    position: fixed;
+    bottom: -33%;
+    left: 0;
+    z-index: 5;
+    width: 100%;
+    height: 66%;
+    background: #ff5a60;
+    transform: skew(0, -8deg);
+}
+.page {
+    position: relative;
+    z-index: 10;
+    width: 90%;
+    margin: 50px auto;
+}
+.clear {
+    clear: both;
+}
+
+/* Titres */
+h1 {
+    margin: 2em 0;
+    color: #fff;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 2em;
+    text-transform: uppercase;
+}
+h2 {
+    margin-top: 0;
+    color: #868395;
+    text-transform: uppercase;
+    font-size: 1.2em;
+}
+
+/* Items */
+.demo-item {
+    position: relative;
+    float: left;
+    margin-bottom: 50px;
+    width: 45%;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+}
+.demo-item:nth-child(2n+1) {
+    margin-left: 4%;
+}
+
+/* Gmaps */
+.gmapstool-gmapWrapper {
+    width: 100%;
+    height: 380px;
+    margin: 0 auto;
+}
+.gmapstool-control {
+    position: absolute;
+    right: 30px;
+    bottom: 50px;
+    padding: 10px;
+    width: 30px;
+    height: 30px;
+    line-height: 0;
+    font-weight: bold;
+    background: #fff;
+    border: 0;
+    box-sizing: border-box;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.gmapstool-control + .gmapstool-control {
+    bottom: 85px;
+}
