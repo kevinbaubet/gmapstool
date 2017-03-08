@@ -7,7 +7,7 @@
  * @param object        gmapOptions Options GoogleMaps
  * @param object        options     Options GmapsTool
  *
- * @version 1.0 (10/02/2017)
+ * @version 1.1 (08/03/2017)
  */
 (function($) {
     'use strict';
@@ -341,6 +341,8 @@
                 .done(function(style) {
                     self.gmap.set('styles', style);
                 });
+
+            return self;
         },
 
         /**
@@ -350,6 +352,11 @@
          */
         setControls: function(options) {
             var self = this;
+
+            // Paramètre manquant ?
+            if (options === undefined) {
+                options = {};
+            }
 
             // Options de la map avec surcharge possible
             var mapOptions = {};

@@ -1,5 +1,4 @@
 var gulp = require('gulp');
-var less = require('gulp-less');
 var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
 

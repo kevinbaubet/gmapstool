@@ -78,12 +78,12 @@
                 /**
                  * Personnalisée
                  */
-                var gmapCustom = elements.mapCustom.gmapsTool({
+                elements.mapCustom.gmapsTool({
                     center: center
-                });
-                gmapCustom.init();
-                gmapCustom.setStyles('../demo/styles/style.json');
-                gmapCustom.setControls({
+                })
+                .init()
+                .setStyles('../demo/styles/style.json')
+                .setControls({
                     zoom: {
                         in: elements.mapCustomControls.find('button.control-zoom-in'),
                         out: elements.mapCustomControls.find('button.control-zoom-out')
