@@ -7,7 +7,7 @@
  * @param object        gmapOptions Options GoogleMaps
  * @param object        options     Options GmapsTool
  *
- * @version 1.1 (08/03/2017)
+ * @version 1.2 (19/05/2017)
  */
 (function($) {
     'use strict';
@@ -48,7 +48,7 @@
          */
         prepareGmapOptions: function() {
             // Center
-            if (this.gmapOptions.center !== undefined && this.gmapOptions.center.length === 2) {
+            if (this.gmapOptions.center !== undefined) {
                 this.gmapOptions.center = this.getLatLng(this.gmapOptions.center);
             } else {
                 this.setLog('error', 'Please set "center" options');
@@ -98,6 +98,10 @@
             self.markers = [];
 
             // Prevent options
+            if (markers === undefined) {
+                self.setLog('error', 'Missing markers parameter');
+                return false;
+            }
             if (options === undefined) {
                 options = {};
             }
