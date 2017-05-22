@@ -7,12 +7,12 @@
  * @param object        gmapOptions Options GoogleMaps
  * @param object        options     Options GmapsTool
  *
- * @version 1.2 (19/05/2017)
+ * @version 1.2 (22/05/2017)
  */
-(function($) {
+(function ($) {
     'use strict';
 
-    $.GmapsTool = function(element, gmapOptions, options) {
+    $.GmapsTool = function (element, gmapOptions, options) {
         // Éléments
         this.elements = {
             gmapId: element // Google maps Identifier
@@ -22,6 +22,10 @@
         $.extend((this.gmapOptions = {}), $.GmapsTool.defaults.gmapOptions, gmapOptions);
         $.extend((this.settings = {}), $.GmapsTool.defaults, options);
         delete this.settings.gmapOptions;
+
+        // Variables
+        this.markers = [];
+        this.layers = [];
 
         return this;
     };
@@ -46,7 +50,7 @@
          *
          * @return bool
          */
-        prepareGmapOptions: function() {
+        prepareGmapOptions: function () {
             // Center
             if (this.gmapOptions.center !== undefined) {
                 this.gmapOptions.center = this.getLatLng(this.gmapOptions.center);
@@ -66,7 +70,7 @@
         /**
          * Init map
          */
-        init: function() {
+        init: function () {
             if (this.prepareGmapOptions()) {
                 this.gmap = new google.maps.Map(this.elements.gmapId[0], this.gmapOptions);
             }
@@ -79,7 +83,7 @@
          *
          * @param object options Options à ajouter
          */
-        setMapOptions: function(options) {
+        setMapOptions: function (options) {
             this.gmap.setOptions(options);
 
             return this;
@@ -92,10 +96,9 @@
          * @param object options Options utilisateur
          * @param object
          */
-        setMarkers: function(markers, options) {
+        setMarkers: function (markers, options) {
             var self = this;
             self.bounds = new google.maps.LatLngBounds();
-            self.markers = [];
 
             // Prevent options
             if (markers === undefined) {
@@ -113,7 +116,7 @@
             }
 
             if (markers.length) {
-                $.each(markers, function(i, marker) {
+                $.each(markers, function (i, marker) {
                     self.setMarker(marker, options);
                 });
             }
@@ -130,7 +133,7 @@
             if (options.onComplete !== undefined) {
                 options.onComplete.call({
                     GmapsTool: self,
-                    markers: self.markers,
+                    markers: self.getMarkers(),
                     bounds: self.bounds
                 });
             }
@@ -139,11 +142,20 @@
         },
 
         /**
+         * Récupération de tous les marqueurs
+         * 
+         * @return array
+         */
+        getMarkers: function () {
+            return this.markers;
+        },
+
+        /**
          * Ajout des clusters aux marqueurs
          *
          * @param object options Options utilisateur
          */
-        addMarkersClusters: function(options) {
+        addMarkersClusters: function (options) {
             // Dépendence MarkerClusterer ?
             if (typeof MarkerClusterer === 'undefined') {
                 this.setLog('error', 'Missing "MarkerClusterer" dependency');
@@ -157,7 +169,7 @@
 
             // Liste des marqueurs
             var markers = [];
-            $.each(this.markers, function(i, marker) {
+            $.each(this.getMarkers(), function (i, marker) {
                 markers.push(marker.richMarker);
             });
 
@@ -172,7 +184,7 @@
          * @param  object options
          * @return object marker
          */
-        setMarker: function(marker, options) {
+        setMarker: function (marker, options) {
             var self = this;
 
             // Get LatLng
@@ -188,15 +200,15 @@
 
             // Événements Gmap
             var markerEvents = ['click', 'dblclick', 'mouseover', 'mouseout'];
-            $.each(markerEvents, function(i, eventName) {
+            $.each(markerEvents, function (i, eventName) {
                 var eventOptName = self.formatEventName(eventName);
 
                 if (options[eventOptName] !== undefined) {
-                    google.maps.event.addListener(marker.richMarker, eventName, function(event) {
+                    google.maps.event.addListener(marker.richMarker, eventName, function () {
                         options[eventOptName].call({
                             GmapsTool: self,
                             marker: marker,
-                            event: event
+                            event: this
                         });
                     });
                 }
@@ -221,9 +233,9 @@
          * Centre la carte
          * Si this.bounds est présent, le centre se fait en fonction de ses positions
          */
-        setCenter: function() {
+        setCenter: function () {
             if (this.bounds !== undefined) {
-                if (this.markers.length > 1) {
+                if (this.getMarkers().length > 1) {
                     this.gmap.fitBounds(this.bounds);
                 }
 
@@ -241,7 +253,7 @@
          * @param  array  layers  Tableau des calques à charger
          * @param  object options Options pour tous les calques
          */
-        setLayers: function(layers, options) {
+        setLayers: function (layers, options) {
             var self = this;
             self.layers = [];
 
@@ -251,7 +263,7 @@
             }
 
             if (layers !== undefined && layers.length > 0) {
-                $.each(layers, function(i, layer) {
+                $.each(layers, function (i, layer) {
                     if (self.prepareLayerOptions(layer)) {
                         self.setLayer(layer, options);
                     }
@@ -262,11 +274,20 @@
             if (options.onComplete !== undefined) {
                 options.onComplete.call({
                     GmapsTool: self,
-                    layers: self.layers
+                    layers: self.getLayers()
                 });
             }
 
             return self;
+        },
+
+        /**
+         * Récupération de tous les calques
+         * 
+         * @return array
+         */
+        getLayers: function () {
+            return this.layers;
         },
 
         /**
@@ -275,7 +296,7 @@
          * @param  object layer
          * @return bool
          */
-        prepareLayerOptions: function(layer) {
+        prepareLayerOptions: function (layer) {
             if (layer.path !== undefined && layer.path.substring(0, 4) !== 'http') {
                 this.setLog('error', 'The ' + layer.type + ' file must be online');
                 return false;
@@ -291,7 +312,7 @@
          * @param  object options
          * @return object layer
          */
-        setLayer: function(layer, options) {
+        setLayer: function (layer, options) {
             var self = this;
             $.extend(options, {
                 url: layer.path,
@@ -302,15 +323,15 @@
 
             // Événements Layer
             var layerEvents = ['click', 'defaultviewport_changed', 'status_changed'];
-            $.each(layerEvents, function(i, eventName) {
+            $.each(layerEvents, function (i, eventName) {
                 var eventOptName = self.formatEventName(eventName);
 
                 if (options[eventOptName] !== undefined) {
-                   layer.layer.addListener(eventName, function(event) {
+                   layer.layer.addListener(eventName, function () {
                         options[eventOptName].call({
                             GmapsTool: self,
                             layer: layer,
-                            event: event
+                            event: this
                         });
                     });
                 }
@@ -335,14 +356,14 @@
          *
          * @param string path Chemin du fichier JSON contenant les styles
          */
-        setStyles: function(path) {
+        setStyles: function (path) {
             var self = this;
 
             $.getJSON(path)
-                .fail(function() {
+                .fail(function () {
                     self.setLog('error', 'Json file not found');
                 })
-                .done(function(style) {
+                .done(function (style) {
                     self.gmap.set('styles', style);
                 });
 
@@ -354,7 +375,7 @@
          *
          * @param object options Options utilisateur
          */
-        setControls: function(options) {
+        setControls: function (options) {
             var self = this;
 
             // Paramètre manquant ?
@@ -374,9 +395,9 @@
             // Zoom
             if (options.zoom !== undefined) {
                 var zooms = ['in', 'out'];
-                $.each(zooms, function(i, type) {
+                $.each(zooms, function (i, type) {
                     if (options.zoom[type] !== undefined && options.zoom[type].length) {
-                        google.maps.event.addDomListener(options.zoom[type][0], 'click', function(event) {
+                        google.maps.event.addDomListener(options.zoom[type][0], 'click', function (event) {
                             var level = self.gmap.getZoom();
                             self.gmap.setZoom((type === 'in') ? ++level : --level);
 
@@ -398,7 +419,7 @@
         /**
          * Ajout de logs dans la console
          */
-        setLog: function(type, log) {
+        setLog: function (type, log) {
             console[type]('GmapsTool: ' + log);
         },
 
@@ -408,7 +429,7 @@
          * @param  mixed position Position GPS : [Lat,Lng]
          * @return object si parsable sinon false
          */
-        getLatLng: function(position) {
+        getLatLng: function (position) {
             if (typeof position === 'string' && position.indexOf(',') !== -1) {
                 position = position.split(',');
             }
@@ -426,12 +447,12 @@
          * @param  string event Nom de l'événement Google Maps
          * @return string
          */
-        formatEventName: function(event) {
+        formatEventName: function (event) {
             return 'on' + event.substr(0, 1).toUpperCase() + event.substr(1);
         }
     };
 
-    $.fn.gmapsTool = function(gmapOptions, options) {
+    $.fn.gmapsTool = function (gmapOptions, options) {
         return new $.GmapsTool($(this), gmapOptions, options);
     };
 })(jQuery);
