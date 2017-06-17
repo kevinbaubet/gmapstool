@@ -7,7 +7,7 @@
  * @param object        gmapOptions Options GoogleMaps
  * @param object        options     Options GmapsTool
  *
- * @version 1.2 (22/05/2017)
+ * @version 1.3 (17/06/2017)
  */
 (function ($) {
     'use strict';
@@ -101,44 +101,60 @@
             self.bounds = new google.maps.LatLngBounds();
 
             // Prevent options
-            if (markers === undefined) {
-                self.setLog('error', 'Missing markers parameter');
-                return false;
+            options = options || {};
+            if (options.centerBounds === undefined) {
+                options.centerBounds = true;
             }
-            if (options === undefined) {
-                options = {};
+
+            if (self.prepareMarkersOptions(markers)) {
+                if (markers.length) {
+                    $.each(markers, function (i, marker) {
+                        self.setMarker(marker, options);
+                    });
+                }
+
+                // Mise à jour de la position en fonction des markers
+                if (options.centerBounds) {
+                    self.setCenter();
+                }
+
+                // Ajout des clusters
+                if (options.cluster !== undefined && options.cluster === true) {
+                    self.addMarkersClusters(options);
+                }
+
+                // Fonction utilisateur
+                if (options.onComplete !== undefined) {
+                    options.onComplete.call({
+                        GmapsTool: self,
+                        markers  : self.getMarkers(),
+                        bounds   : self.bounds
+                    });
+                }
+            }
+
+            return self;
+        },
+
+        /**
+         * Préparation des options pour ajouter des marqueurs
+         *
+         * @param markers
+         * @returns bool
+         */
+        prepareMarkersOptions: function (markers) {
+            if (markers === undefined) {
+                this.setLog('error', 'Missing markers parameter');
+                return false;
             }
 
             // Dépendence RichMarker ?
             if (typeof RichMarker === 'undefined') {
-                self.setLog('error', 'Missing "RichMarker" dependency');
+                this.setLog('error', 'Missing "RichMarker" dependency');
                 return false;
             }
 
-            if (markers.length) {
-                $.each(markers, function (i, marker) {
-                    self.setMarker(marker, options);
-                });
-            }
-
-            // Mise à jour de la position en fonction des markers
-            self.setCenter();
-
-            // Ajout des clusters
-            if (options.cluster !== undefined && options.cluster === true) {
-                self.addMarkersClusters(options);
-            }
-
-            // Fonction utilisateur
-            if (options.onComplete !== undefined) {
-                options.onComplete.call({
-                    GmapsTool: self,
-                    markers: self.getMarkers(),
-                    bounds: self.bounds
-                });
-            }
-
-            return self;
+            return true;
         },
 
         /**
