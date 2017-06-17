@@ -62,6 +62,7 @@ Chaque marqueur doit à avoir au moins 2 options :
 |----------------------------------------------|----------|-------------------|------------------------------------------------------------------|
 | cluster                                      | boolean  | false             | Activation des clusters (necessite la librairie MarkerClusterer) |
 | clusterOptions                               | object   | {}                | Permet de définir les options de la librairie MarkerClusterer    |
+| centerBounds                                 | boolean  | true              | Centre la carte aux limites des positions des marqueurs          |
 | onClick, onDblclick, onMouseover, onMouseout | function | undefined         | Callback GoogleMaps                                              |
 | onAdd                                        | function | undefined         | Callback une fois un marqueur ajouté                             |
 | onComplete                                   | function | undefined         | Callback une fois tous les marqueurs ajoutés                     |
