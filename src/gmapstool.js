@@ -50,12 +50,18 @@
          *
          * @return bool
          */
-        prepareGmapOptions: function () {
+        prepareOptions: function () {
+            // Élément
+            if (this.elements.gmapId.length === 0) {
+                this.setLog('error', 'Selector not found');
+                return false;
+            }
+
             // Center
             if (this.gmapOptions.center !== undefined) {
                 this.gmapOptions.center = this.getLatLng(this.gmapOptions.center);
             } else {
-                this.setLog('error', 'Please set "center" options');
+                this.setLog('error', 'Missing center parameter');
                 return false;
             }
 
@@ -71,7 +77,7 @@
          * Init map
          */
         init: function () {
-            if (this.prepareGmapOptions()) {
+            if (this.prepareOptions()) {
                 this.gmap = new google.maps.Map(this.elements.gmapId[0], this.gmapOptions);
             }
 
