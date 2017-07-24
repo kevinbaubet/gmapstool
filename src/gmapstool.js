@@ -7,7 +7,7 @@
  * @param object        gmapOptions Options GoogleMaps
  * @param object        options     Options GmapsTool
  *
- * @version 1.3 (17/06/2017)
+ * @version 1.3.1 (24/07/2017)
  */
 (function ($) {
     'use strict';
@@ -37,11 +37,22 @@
             minZoom: 7,
             maxZoom: 17
         },
+        fullscreen: false,
         richMarkerOptions: {
             draggable: false,
             shadow: 'none'
         },
-        fullscreen: false
+        cluster: false,
+        clusterOptions: {
+            svg: {
+                color: '#303748',
+                colors: [],
+                sizes: [36, 46, 56, 66, 76],
+                textColor: '#fff',
+                borderWidth: 1,
+                borderColor: '#fff'
+            }
+        }
     };
 
     $.GmapsTool.prototype = {
@@ -178,25 +189,49 @@
          * @param object options Options utilisateur
          */
         addMarkersClusters: function (options) {
+            var self = this;
+
             // Dépendence MarkerClusterer ?
             if (typeof MarkerClusterer === 'undefined') {
-                this.setLog('error', 'Missing "MarkerClusterer" dependency');
+                self.setLog('error', 'Missing "MarkerClusterer" dependency');
                 return false;
             }
 
             // Options
-            $.extend({
-                maxZoom: this.gmapOptions.maxZoom
-            }, (options.clusterOptions = (options.clusterOptions === undefined) ? {} : options.clusterOptions));
+            var clusterOptions = {
+                maxZoom: self.gmapOptions.maxZoom - 1
+            };
+
+            // Cluster svg?
+            if (self.settings.clusterOptions.svg !== false && Object.keys(self.settings.clusterOptions.svg).length && Object.keys(self.settings.clusterOptions.svg.sizes).length) {
+                clusterOptions.styles = [];
+
+                $.each(self.settings.clusterOptions.svg.sizes, function (index, size) {
+                    var color = (self.settings.clusterOptions.svg.colors.length) ? self.settings.clusterOptions.svg.colors[index] : self.settings.clusterOptions.svg.color;
+                    var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">' +
+                        '<circle cx="25" cy="25" r="25" stroke="' + self.settings.clusterOptions.svg.borderColor + '" stroke-width="' + self.settings.clusterOptions.svg.borderWidth + '" fill="' + color + '" />' +
+                        '</svg>';
+
+                    clusterOptions.styles.push({
+                        textColor: self.settings.clusterOptions.svg.textColor,
+                        url: 'data:image/svg+xml;base64,' + window.btoa(svg),
+                        width: size,
+                        height: size
+                    });
+                });
+            }
+
+            // Set options
+            $.extend(true, self.settings.clusterOptions, clusterOptions, options.clusterOptions);
 
             // Liste des marqueurs
             var markers = [];
-            $.each(this.getMarkers(), function (i, marker) {
+            $.each(self.getMarkers(), function (i, marker) {
                 markers.push(marker.richMarker);
             });
 
             // Init clusters
-            return new MarkerClusterer(this.gmap, markers, options.clusterOptions);
+            return new MarkerClusterer(self.gmap, markers, self.settings.clusterOptions);
         },
 
         /**

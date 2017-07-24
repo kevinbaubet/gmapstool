@@ -5,7 +5,7 @@
         <title>GmapsTool</title>
         <link rel="stylesheet" href="demo.css" />
 
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" ></script>
+        <script src="../node_modules/jquery/dist/jquery.min.js" ></script>
         <script src="https://maps.googleapis.com/maps/api/js"></script>
 
         <script src="../src/gmapstool.js"></script>
@@ -57,9 +57,6 @@
                 ];
                 gmapMarkers.setMarkers(markers, {
                     cluster: true,
-                    clusterOptions: {
-                        imagePath: 'images/m'
-                    },
                     onClick: function() {
                         console.log(this);
                     }

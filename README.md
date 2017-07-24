@@ -58,14 +58,21 @@ Chaque marqueur doit à avoir au moins 2 options :
 
 ### Options
 
-| Option                                       | Type     | Valeur par défaut | Description                                                      |
-|----------------------------------------------|----------|-------------------|------------------------------------------------------------------|
-| cluster                                      | boolean  | false             | Activation des clusters (necessite la librairie MarkerClusterer) |
-| clusterOptions                               | object   | {}                | Permet de définir les options de la librairie MarkerClusterer    |
-| centerBounds                                 | boolean  | true              | Centre la carte aux limites des positions des marqueurs          |
-| onClick, onDblclick, onMouseover, onMouseout | function | undefined         | Callback GoogleMaps                                              |
-| onAdd                                        | function | undefined         | Callback une fois un marqueur ajouté                             |
-| onComplete                                   | function | undefined         | Callback une fois tous les marqueurs ajoutés                     |
+| Option                                                      | Type     | Valeur par défaut    | Description                                                                  |
+|-------------------------------------------------------------|----------|----------------------|------------------------------------------------------------------------------|
+| cluster                                                     | boolean  | false                | Activation des clusters (necessite la librairie MarkerClusterer)             |
+| clusterOptions                                              | object   | Voir ci-dessous      | Permet de définir les options de la librairie MarkerClusterer                |
+| &nbsp;&nbsp;&nbsp;&nbsp;svg                                 | object   | Voir ci-dessous      | Si spécifié, les clusters seront affichés en SVG                             |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color       | string   | '#303748'            | Couleur unique pour tous les clusters                                        |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;colors      | array    | []                   | Surcharge la couleur principale pour en définir une par niveau (5 niveaux)   |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sizes       | array    | [36, 46, 56, 66, 76] | Taille du cluster en px pour chaque niveau                                   |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;textColor   | string   | '#fff'               | Couleur du texte                                                             |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderWidth | integer  | 1                    | Taille de la bordure                                                         |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor | integer  | '#fff'               | Couleur de la bordure                                                        |
+| centerBounds                                                | boolean  | true                 | Centre la carte aux limites des positions des marqueurs                      |
+| onClick, onDblclick, onMouseover, onMouseout                | function | undefined            | Callback GoogleMaps                                                          |
+| onAdd                                                       | function | undefined            | Callback une fois un marqueur ajouté                                         |
+| onComplete                                                  | function | undefined            | Callback une fois tous les marqueurs ajoutés                                 |
 
 
 ## Gestion des calques KML
@@ -97,6 +104,7 @@ Chaque calque doit avoir au moins l'option **path**
 
 ### Méthode
 
+    setControles() // désactive tous les contrôles
     setControls(options)
 
 ### Options
