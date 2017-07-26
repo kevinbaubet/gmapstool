@@ -32,6 +32,7 @@ Ce script permet de simplifier l'utilisation des cartes GoogleMaps.
 | setMapOptions | **options** *object* Options à ajouter        | Permet d'ajouter des options provenant de la librairie Google Maps |
 | setCenter     | -                                             | Centre la carte                                                    |
 | setStyles     | **path** *string* Chemin vers le fichier json | Permet d'ajouter un style personnalisé                             |
+| getMap        | -                                             | Récupération de l'objet GoogleMaps                                 |
 | getLatLng     | **position** *mixed* Positions 'Lat, Lng'     | Récupération de la position en LatLng par GoogleMaps               |
 | getMarkers    | -                                             | Récupération de tous les marqueurs                                 |
 | getLayers     | -                                             | Récupération de tous les calques                                   |
@@ -68,7 +69,7 @@ Chaque marqueur doit à avoir au moins 2 options :
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sizes       | array    | [36, 46, 56, 66, 76] | Taille du cluster en px pour chaque niveau                                   |
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;textColor   | string   | '#fff'               | Couleur du texte                                                             |
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderWidth | integer  | 1                    | Taille de la bordure                                                         |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor | integer  | '#fff'               | Couleur de la bordure                                                        |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor | string   | '#fff'               | Couleur de la bordure                                                        |
 | centerBounds                                                | boolean  | true                 | Centre la carte aux limites des positions des marqueurs                      |
 | onClick, onDblclick, onMouseover, onMouseout                | function | undefined            | Callback GoogleMaps                                                          |
 | onAdd                                                       | function | undefined            | Callback une fois un marqueur ajouté                                         |

@@ -7,7 +7,7 @@
  * @param object        gmapOptions Options GoogleMaps
  * @param object        options     Options GmapsTool
  *
- * @version 1.3.1 (24/07/2017)
+ * @version 1.3.2 (26/07/2017)
  */
 (function ($) {
     'use strict';
@@ -19,8 +19,8 @@
         };
 
         // Config
-        $.extend((this.gmapOptions = {}), $.GmapsTool.defaults.gmapOptions, gmapOptions);
-        $.extend((this.settings = {}), $.GmapsTool.defaults, options);
+        $.extend(true, (this.gmapOptions = {}), $.GmapsTool.defaults.gmapOptions, gmapOptions);
+        $.extend(true, (this.settings = {}), $.GmapsTool.defaults, options);
         delete this.settings.gmapOptions;
 
         // Variables
@@ -101,7 +101,7 @@
          * @param object options Options à ajouter
          */
         setMapOptions: function (options) {
-            this.gmap.setOptions(options);
+            this.getMap().setOptions(options);
 
             return this;
         },
@@ -231,7 +231,7 @@
             });
 
             // Init clusters
-            return new MarkerClusterer(self.gmap, markers, self.settings.clusterOptions);
+            return new MarkerClusterer(self.getMap(), markers, self.settings.clusterOptions);
         },
 
         /**
@@ -249,7 +249,7 @@
 
             // RichMarker
             $.extend((marker.richMarkerOptions = {}), self.settings.richMarkerOptions, {
-                map: self.gmap,
+                map: self.getMap(),
                 content: ((typeof marker.content === 'object') ? marker.content[0] : marker.content),
                 position: marker.position
             }, marker.options);
@@ -293,12 +293,12 @@
         setCenter: function () {
             if (this.bounds !== undefined) {
                 if (this.getMarkers().length > 1) {
-                    this.gmap.fitBounds(this.bounds);
+                    this.getMap().fitBounds(this.bounds);
                 }
 
-                this.gmap.setCenter(this.bounds.getCenter());
+                this.getMap().setCenter(this.bounds.getCenter());
             } else {
-                this.gmap.setCenter(this.gmapOptions.center);
+                this.getMap().setCenter(this.gmapOptions.center);
             }
 
             return this;
@@ -374,7 +374,7 @@
             $.extend(options, {
                 url: layer.path,
                 preserveViewport: true,
-                map: self.gmap
+                map: self.getMap()
             });
             layer.layer = new google.maps.KmlLayer(options);
 
@@ -421,7 +421,7 @@
                     self.setLog('error', 'Json file not found');
                 })
                 .done(function (style) {
-                    self.gmap.set('styles', style);
+                    self.getMap().set('styles', style);
                 });
 
             return self;
@@ -455,8 +455,8 @@
                 $.each(zooms, function (i, type) {
                     if (options.zoom[type] !== undefined && options.zoom[type].length) {
                         google.maps.event.addDomListener(options.zoom[type][0], 'click', function (event) {
-                            var level = self.gmap.getZoom();
-                            self.gmap.setZoom((type === 'in') ? ++level : --level);
+                            var level = self.getMap().getZoom();
+                            self.getMap().setZoom((type === 'in') ? ++level : --level);
 
                             if (options.zoom.onClick !== undefined) {
                                 options.zoom.onClick.call({
@@ -496,6 +496,15 @@
             }
 
             return false;
+        },
+
+        /**
+         * Alias pour récupérer la carte GoogleMaps
+         *
+         * @returns {google.maps.Map}
+         */
+        getMap: function () {
+            return this.gmap;
         },
 
         /**
