@@ -6,8 +6,6 @@
  * @param jQuery object element     Conteneur GoogleMaps
  * @param object        gmapOptions Options GoogleMaps
  * @param object        options     Options GmapsTool
- *
- * @version 1.3.2 (26/07/2017)
  */
 (function ($) {
     'use strict';
@@ -15,7 +13,7 @@
     $.GmapsTool = function (element, gmapOptions, options) {
         // Éléments
         this.elements = {
-            gmapId: element // Google maps Identifier
+            gmapId: element
         };
 
         // Config
@@ -24,31 +22,41 @@
         delete this.settings.gmapOptions;
 
         // Variables
+        this.gmap;
         this.markers = [];
-        this.layers = [];
+        this.layers  = [];
+        this.pathAPI = 'https://maps.googleapis.com/maps/api';
+        this.style   = false;
 
         return this;
     };
 
     $.GmapsTool.defaults = {
         gmapOptions: {
-            center: undefined,
-            zoom: 10,
+            center : undefined,
+            zoom   : 10,
             minZoom: 7,
             maxZoom: 17
         },
+        apiKey    : undefined,
         fullscreen: false,
+        type      : 'js',
+        staticOptions: {
+            scale  : 2,
+            size   : '300x300',
+            maptype: 'roadmap'
+        },
         richMarkerOptions: {
             draggable: false,
-            shadow: 'none'
+            shadow   : 'none'
         },
         cluster: false,
         clusterOptions: {
             svg: {
-                color: '#303748',
-                colors: [],
-                sizes: [36, 46, 56, 66, 76],
-                textColor: '#fff',
+                color      : '#303748',
+                colors     : [],
+                sizes      : [36, 46, 56, 66, 76],
+                textColor  : '#fff',
                 borderWidth: 1,
                 borderColor: '#fff'
             }
@@ -81,6 +89,11 @@
                 this.gmapOptions.scrollwheel = false;
             }
 
+            // Static
+            if (this.settings.type === 'staticmap' && this.settings.staticOptions.apiKey === undefined) {
+                this.setLog('error', 'Missing "apiKey" parameter');
+            }
+
             return true;
         },
 
@@ -89,8 +102,64 @@
          */
         init: function () {
             if (this.prepareOptions()) {
-                this.gmap = new google.maps.Map(this.elements.gmapId[0], this.gmapOptions);
+                if (this.settings.type === 'staticmap') {
+                    // @see setStyles
+                    if (this.style === false) {
+                        this.initStatic();
+                    }
+
+                } else {
+                    this.gmap = new google.maps.Map(this.elements.gmapId[0], this.gmapOptions);
+                }
             }
+
+            return this;
+        },
+
+        /**
+         * Init map static
+         */
+        initStatic: function () {
+            var self = this;
+
+            // Options
+            var options = {};
+            $.extend(true, options, self.gmapOptions, self.settings.staticOptions);
+            options.key = self.settings.apiKey;
+            delete options.minZoom;
+            delete options.maxZoom;
+
+            // Format path
+            var path = self.pathAPI + '/' + self.settings.type + '?';
+            var optionIndex = 0;
+            $.each(options, function (key, value) {
+                if (optionIndex > 0) {
+                    path += '&';
+                }
+                path += key + '=' + value;
+
+                optionIndex++;
+            });
+
+            // Render
+            var sizeParts = self.settings.staticOptions.size.split('x');
+            $('<img>', {
+                src   : path,
+                width : sizeParts[0],
+                height: sizeParts[1],
+                alt   : ''
+            }).appendTo(self.elements.gmapId);
+
+            return self;
+        },
+
+        /**
+         * Ajout des options à GmapsTool
+         *
+         * @param object options Options à ajouter
+         */
+        setOptions: function (options) {
+            $.extend(true, this.settings, options);
 
             return this;
         },
@@ -115,38 +184,48 @@
          */
         setMarkers: function (markers, options) {
             var self = this;
-            self.bounds = new google.maps.LatLngBounds();
 
-            // Prevent options
-            options = options || {};
-            if (options.centerBounds === undefined) {
-                options.centerBounds = true;
-            }
+            if (self.settings.type === 'staticmap' && markers.length) {
+                self.settings.staticOptions.markers = '';
 
-            if (self.prepareMarkersOptions(markers)) {
-                if (markers.length) {
-                    $.each(markers, function (i, marker) {
-                        self.setMarker(marker, options);
-                    });
+                $.each(markers, function (i, marker) {
+                    self.settings.staticOptions.markers += encodeURIComponent('icon:' + marker.content) + '|' + marker.position.join(',');
+                });
+
+            } else {
+                self.bounds = new google.maps.LatLngBounds();
+
+                // Prevent options
+                options = options || {};
+                if (options.centerBounds === undefined) {
+                    options.centerBounds = true;
                 }
 
-                // Mise à jour de la position en fonction des markers
-                if (options.centerBounds) {
-                    self.setCenter();
-                }
+                if (self.prepareMarkersOptions(markers)) {
+                    if (markers.length) {
+                        $.each(markers, function (i, marker) {
+                            self.setMarker(marker, options);
+                        });
+                    }
 
-                // Ajout des clusters
-                if (options.cluster !== undefined && options.cluster === true) {
-                    self.addMarkersClusters(options);
-                }
+                    // Mise à jour de la position en fonction des markers
+                    if (options.centerBounds) {
+                        self.setCenter();
+                    }
 
-                // Fonction utilisateur
-                if (options.onComplete !== undefined) {
-                    options.onComplete.call({
-                        GmapsTool: self,
-                        markers  : self.getMarkers(),
-                        bounds   : self.bounds
-                    });
+                    // Ajout des clusters
+                    if (options.cluster !== undefined && options.cluster === true) {
+                        self.addMarkersClusters(options);
+                    }
+
+                    // Fonction utilisateur
+                    if (options.onComplete !== undefined) {
+                        options.onComplete.call({
+                            GmapsTool: self,
+                            markers  : self.getMarkers(),
+                            bounds   : self.bounds
+                        });
+                    }
                 }
             }
 
@@ -297,6 +376,7 @@
                 }
 
                 this.getMap().setCenter(this.bounds.getCenter());
+
             } else {
                 this.getMap().setCenter(this.gmapOptions.center);
             }
@@ -415,16 +495,76 @@
          */
         setStyles: function (path) {
             var self = this;
+            self.style = true;
 
             $.getJSON(path)
                 .fail(function () {
                     self.setLog('error', 'Json file not found');
                 })
                 .done(function (style) {
-                    self.getMap().set('styles', style);
+                    if (self.settings.type === 'staticmap') {
+                        self.settings.staticOptions.style = self.staticFormatStyles(style);
+                        self.initStatic();
+
+                    } else {
+                        self.getMap().set('styles', style);
+                    }
                 });
 
             return self;
+        },
+
+        /**
+         * Formatage des styles pour une map statique
+         *
+         * @param data données décodées depuis le JSON
+         * @return string
+         */
+        staticFormatStyles: function (data) {
+            var items     = [];
+            var separator = '|';
+            var isColor   = function (value) {
+                return /^#[0-9a-f]{6}$/i.test(value.toString());
+            };
+            var toColor   = function (value) {
+                return '0x' + value.slice(1);
+            };
+            var i         = 0;
+            items.length  = 0;
+
+            for (i; i < data.length; i++) {
+                var item       = data[i],
+                    hasFeature = item.hasOwnProperty('featureType'),
+                    hasElement = item.hasOwnProperty('elementType'),
+                    stylers    = item.stylers,
+                    target     = '',
+                    style      = '';
+
+                if (!hasFeature && !hasElement) {
+                    target = 'feature:all';
+                } else {
+                    if (hasFeature) {
+                        target = 'feature:' + item.featureType;
+                    }
+                    if (hasElement) {
+                        target = target ? target + separator : '';
+                        target += 'element:' + item.elementType;
+                    }
+                }
+
+                var s = 0;
+                for (s; s < stylers.length; s++) {
+                    var styleItem = stylers[s],
+                        key       = Object.keys(styleItem)[0];
+
+                    style = style ? style + separator : '';
+                    style += key + ':' + (isColor(styleItem[key]) ? toColor(styleItem[key]) : styleItem[key]);
+                }
+
+                items.push(target + separator + style);
+            }
+
+            return items.join('&style=');
         },
 
         /**
@@ -492,7 +632,12 @@
             }
 
             if (typeof position === 'object' && position.length === 2) {
-                return new google.maps.LatLng(position[0], position[1]);
+                if (this.settings.type === 'staticmap') {
+                    return position[0] + ',' + position[1];
+
+                } else {
+                    return new google.maps.LatLng(position[0], position[1]);
+                }
             }
 
             return false;

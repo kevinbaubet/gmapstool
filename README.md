@@ -105,7 +105,7 @@ Chaque calque doit avoir au moins l'option **path**
 
 ### Méthode
 
-    setControles() // désactive tous les contrôles
+    setControls() // désactive tous les contrôles
     setControls(options)
 
 ### Options
