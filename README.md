@@ -25,18 +25,18 @@ Simplifie l'utilisation des cartes GoogleMaps.
 
 ## Méthodes classiques
 
-| Méthode       | Arguments                                     | Description                                                        |
-|---------------|-----------------------------------------------|--------------------------------------------------------------------|
-| init          | -                                             | Permet d'initialiser la carte                                      |
-| setOptions    | **options** *object* Options à ajouter        | Permet d'ajouter des options à GmapsTool                           |
-| setMapOptions | **options** *object* Options à ajouter        | Permet d'ajouter des options provenant de la librairie Google Maps |
-| setCenter     | -                                             | Centre la carte                                                    |
-| setStyles     | **path** *string* Chemin vers le fichier json | Permet d'ajouter un style personnalisé                             |
-| getMap        | -                                             | Récupération de l'objet GoogleMaps                                 |
-| getLatLng     | **position** *mixed* Positions 'Lat, Lng'     | Récupération de la position en LatLng par GoogleMaps               |
-| getMarkers    | -                                             | Récupération de tous les marqueurs                                 |
-| getInfoWindow | -                                             | Récupére l'infoWindow courante                                     |
-| getLayers     | -                                             | Récupération de tous les calques                                   |
+| Méthode       | Arguments                                     | Description                                              |
+|---------------|-----------------------------------------------|----------------------------------------------------------|
+| init          | -                                             | Initialise la carte                                      |
+| setOptions    | **options** *object* Options à ajouter        | Ajoute des options à GmapsTool                           |
+| setMapOptions | **options** *object* Options à ajouter        | Ajoute des options provenant de la librairie Google Maps |
+| setCenter     | -                                             | Centre la carte                                          |
+| setStyles     | **path** *string* Chemin vers le fichier json | Ajoute un style personnalisé                             |
+| getMap        | -                                             | Récupère l'objet GoogleMaps                              |
+| getLatLng     | **position** *mixed* Positions 'Lat, Lng'     | Récupère la position en LatLng par GoogleMaps            |
+| getMarkers    | -                                             | Récupère tous les marqueurs                              |
+| getInfoWindow | -                                             | Récupère l'infoWindow courante                           |
+| getLayers     | -                                             | Récupère tous les calques                                |
 
 ### Exemple
 
@@ -58,6 +58,7 @@ Simplifie l'utilisation des cartes GoogleMaps.
 ### Markers
 
 | Option     | Type  | Description                                                                                                                                      |
+|------------|-------|--------------------------------------------------------------------------------------------------------------------------------------------------|
 | position   | mixed | Position du marqueur : [Lat, Lng] ou 'lat,lng'                                                                                                   |
 | content    | mixed | Affichage du marqueur : Objet jQuery ou chaine html (si carte statique, il faut que le marqueur soit une image PNG et accessible en url aboslue) |
 | infoWindow | mixed | Permet d'ajouter une infoWindow : Objet jQuery ou chaine html (optionnel)                                                                        |
@@ -106,6 +107,7 @@ Simplifie l'utilisation des cartes GoogleMaps.
 ### Layers
 
 | Option | Type   | Description                           |
+|--------|--------|---------------------------------------|
 | path   | string | URL absolue d'un calque au format KML |
 
 ### Options
@@ -132,7 +134,7 @@ Simplifie l'utilisation des cartes GoogleMaps.
 ### Méthode
 
     setControls() // désactive tous les contrôles
-    setControls(options)
+    setControls(object options)
 
 ### Options
 
@@ -165,7 +167,7 @@ Simplifie l'utilisation des cartes GoogleMaps.
 
 ### Méthode
 
-    setStatic([options])
+    setStatic([object options])
 
 ### Options
 
