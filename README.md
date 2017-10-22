@@ -9,19 +9,19 @@ Ce script permet de simplifier l'utilisation des cartes GoogleMaps.
 
 ## Options
 
-| Option                                          | Type         | Valeur par défaut | Description                                                           |
-|-------------------------------------------------|--------------|-------------------|-----------------------------------------------------------------------|
-| map                                             | object       | Voir ci-dessous   | Options à passer à la librarie Gmap                                   |
-| &nbsp;&nbsp;&nbsp;&nbsp;center*                 | string/array | undefined         | Positions Lat,Lng pour centrer la carte                               |
-| &nbsp;&nbsp;&nbsp;&nbsp;zoom                    | integer      | 10                | Niveau de zoom par défaut                                             |
-| &nbsp;&nbsp;&nbsp;&nbsp;minZoom                 | integer      | 7                 | Niveau de zomm minimum                                                |
-| &nbsp;&nbsp;&nbsp;&nbsp;maxZoom                 | integer      | 17                | Niveau de zomm maximum                                                |
-| &nbsp;&nbsp;&nbsp;&nbsp;(see api documentation) | integer      | 17                | Niveau de zomm maximum                                                |
-| richMarkerOptions                               | object       | Voir ci-dessous   | Options à passer à la librarie RichMarker                             |
-| &nbsp;&nbsp;&nbsp;&nbsp;draggable               | boolean      | false             | Option du drag&drop                                                   |
-| &nbsp;&nbsp;&nbsp;&nbsp;shadow                  | string       | 'none'            | Option des ombres                                                     |
-| apiKey                                          | string       | undefined         | Ajouter la clé API google maps (utilisé pour les cartes statiques)    |
-| fullscreen                                      | boolean      | false             | Permet de désactiver le zoom au scroll quand la map est en fullscreen |
+| Option                                              | Type         | Valeur par défaut | Description                                                           |
+|-----------------------------------------------------|--------------|-------------------|-----------------------------------------------------------------------|
+| map                                                 | object       | Voir ci-dessous   | Options à passer à la librarie Gmap                                   |
+| &nbsp;&nbsp;&nbsp;&nbsp;center*                     | string/array | undefined         | Positions Lat,Lng pour centrer la carte                               |
+| &nbsp;&nbsp;&nbsp;&nbsp;zoom                        | integer      | 10                | Niveau de zoom par défaut                                             |
+| &nbsp;&nbsp;&nbsp;&nbsp;minZoom                     | integer      | 7                 | Niveau de zomm minimum                                                |
+| &nbsp;&nbsp;&nbsp;&nbsp;maxZoom                     | integer      | 17                | Niveau de zomm maximum                                                |
+| &nbsp;&nbsp;&nbsp;&nbsp;... (see api documentation) |              |                   |                                                                       |
+| richMarkerOptions                                   | object       | Voir ci-dessous   | Options à passer à la librarie RichMarker                             |
+| &nbsp;&nbsp;&nbsp;&nbsp;draggable                   | boolean      | false             | Option du drag&drop                                                   |
+| &nbsp;&nbsp;&nbsp;&nbsp;shadow                      | string       | 'none'            | Option des ombres                                                     |
+| apiKey                                              | string       | undefined         | Ajouter la clé API google maps (utilisé pour les cartes statiques)    |
+| fullscreen                                          | boolean      | false             | Permet de désactiver le zoom au scroll quand la map est en fullscreen |
 
 * Options obligatoires.
 
