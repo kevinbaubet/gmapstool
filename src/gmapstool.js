@@ -279,10 +279,17 @@
                 }
             });
 
-            if (infoWindow && this.settings.infoWindowOptions.pixelOffset !== undefined && this.settings.infoWindowOptions.pixelOffset.length === 2) {
-                this.infoWindow = new google.maps.InfoWindow({
-                    pixelOffset: new google.maps.Size(this.settings.infoWindowOptions.pixelOffset[0], this.settings.infoWindowOptions.pixelOffset[1])
-                });
+            if (infoWindow) {
+                // Options supplémentaires ?
+                if (this.markersOptions.infoWindowOptions !== undefined) {
+                    $.extend(this.settings.infoWindowOptions, this.markersOptions.infoWindowOptions);
+                }
+
+                // Conversion du pixelOffset en Gmaps Size
+                this.settings.infoWindowOptions.pixelOffset = new google.maps.Size(this.settings.infoWindowOptions.pixelOffset[0], this.settings.infoWindowOptions.pixelOffset[1]);
+
+                // Init infoWindow
+                this.infoWindow = new google.maps.InfoWindow(this.settings.infoWindowOptions);
             }
 
             return true;

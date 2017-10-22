@@ -9,18 +9,19 @@ Ce script permet de simplifier l'utilisation des cartes GoogleMaps.
 
 ## Options
 
-| Option                            | Type         | Valeur par défaut | Description                                                           |
-|-----------------------------------|--------------|-------------------|-----------------------------------------------------------------------|
-| map                               | object       | Voir ci-dessous   | Options à passer à la librarie Gmap                                   |
-| &nbsp;&nbsp;&nbsp;&nbsp;center*   | string/array | undefined         | Positions Lat,Lng pour centrer la carte                               |
-| &nbsp;&nbsp;&nbsp;&nbsp;zoom      | integer      | 10                | Niveau de zoom par défaut                                             |
-| &nbsp;&nbsp;&nbsp;&nbsp;minZoom   | integer      | 7                 | Niveau de zomm minimum                                                |
-| &nbsp;&nbsp;&nbsp;&nbsp;maxZoom   | integer      | 17                | Niveau de zomm maximum                                                |
-| richMarkerOptions                 | object       | Voir ci-dessous   | Options à passer à la librarie RichMarker                             |
-| &nbsp;&nbsp;&nbsp;&nbsp;draggable | boolean      | false             | Option du drag&drop                                                   |
-| &nbsp;&nbsp;&nbsp;&nbsp;shadow    | string       | 'none'            | Option des ombres                                                     |
-| apiKey                            | string       | undefined         | Ajouter la clé API google maps (utilisé pour les cartes statiques)    |
-| fullscreen                        | boolean      | false             | Permet de désactiver le zoom au scroll quand la map est en fullscreen |
+| Option                                          | Type         | Valeur par défaut | Description                                                           |
+|-------------------------------------------------|--------------|-------------------|-----------------------------------------------------------------------|
+| map                                             | object       | Voir ci-dessous   | Options à passer à la librarie Gmap                                   |
+| &nbsp;&nbsp;&nbsp;&nbsp;center*                 | string/array | undefined         | Positions Lat,Lng pour centrer la carte                               |
+| &nbsp;&nbsp;&nbsp;&nbsp;zoom                    | integer      | 10                | Niveau de zoom par défaut                                             |
+| &nbsp;&nbsp;&nbsp;&nbsp;minZoom                 | integer      | 7                 | Niveau de zomm minimum                                                |
+| &nbsp;&nbsp;&nbsp;&nbsp;maxZoom                 | integer      | 17                | Niveau de zomm maximum                                                |
+| &nbsp;&nbsp;&nbsp;&nbsp;(see api documentation) | integer      | 17                | Niveau de zomm maximum                                                |
+| richMarkerOptions                               | object       | Voir ci-dessous   | Options à passer à la librarie RichMarker                             |
+| &nbsp;&nbsp;&nbsp;&nbsp;draggable               | boolean      | false             | Option du drag&drop                                                   |
+| &nbsp;&nbsp;&nbsp;&nbsp;shadow                  | string       | 'none'            | Option des ombres                                                     |
+| apiKey                                          | string       | undefined         | Ajouter la clé API google maps (utilisé pour les cartes statiques)    |
+| fullscreen                                      | boolean      | false             | Permet de désactiver le zoom au scroll quand la map est en fullscreen |
 
 * Options obligatoires.
 
@@ -37,6 +38,7 @@ Ce script permet de simplifier l'utilisation des cartes GoogleMaps.
 | getMap        | -                                             | Récupération de l'objet GoogleMaps                                 |
 | getLatLng     | **position** *mixed* Positions 'Lat, Lng'     | Récupération de la position en LatLng par GoogleMaps               |
 | getMarkers    | -                                             | Récupération de tous les marqueurs                                 |
+| getInfoWindow | -                                             | Récupére l'infoWindow courante                                     |
 | getLayers     | -                                             | Récupération de tous les calques                                   |
 
 
@@ -50,10 +52,10 @@ Ce script permet de simplifier l'utilisation des cartes GoogleMaps.
 
 **markers** *array* Liste des marqueurs à ajouter
 
-Options du marqueur :
-**position**: [Lat, Lng] ou 'lat,lng'
-**content**: Objet jQuery ou chaine html (si carte statique, il faut que le marqueur soit une image PNG et accessible en url aboslue)
-**infoWindow**: Objet jQuery ou chaine html (optionnel)
+*Options du marqueur :*
+* **position**: [Lat, Lng] ou 'lat,lng'
+* **content**: Objet jQuery ou chaine html (si carte statique, il faut que le marqueur soit une image PNG et accessible en url aboslue)
+* **infoWindow**: Objet jQuery ou chaine html (optionnel)
 
     var markers = [
         {position: [46.1620606, -1.1765508], content: $('span', {html: '<svg/>'}) },
@@ -76,6 +78,8 @@ Options du marqueur :
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor | string   | '#fff'               | Couleur de la bordure                                                        |
 | centerBounds                                                | boolean  | true                 | Centre la carte aux limites des positions des marqueurs                      |                                                  | object   | Voir ci-dessous      | Options pour les infoWindows                                                 |
 | onClick, onDblclick, onMouseover, onMouseout                | function | undefined            | Callback GoogleMaps                                                          |
+| infoWindowOptions                                           | object   | Voir ci-dessous      | Permet de définir les options pour créer une infoWindow                      |
+| &nbsp;&nbsp;&nbsp;&nbsp;pixelOffset                         | array    | [0, -30]             | Position de l'infoWindow par rapport au marqueur                             |
 | onInfoWindowOpen                                            | function | undefined            | Callback une fois l'infoWindow ouverte                                       |
 | onInfoWindowClose                                           | function | undefined            | Callback une fois l'infoWindow fermée                                        |
 | onAdd                                                       | function | undefined            | Callback une fois un marqueur ajouté                                         |
