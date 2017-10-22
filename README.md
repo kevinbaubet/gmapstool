@@ -1,11 +1,10 @@
 # Documentation GmapsTool
 
-Ce script permet de simplifier l'utilisation des cartes GoogleMaps.
+Simplifie l'utilisation des cartes GoogleMaps.
 
 ## Initialisation
 
-    var GmapsTool = $('#gmap').gmapsTool([options]);
-
+    var gmapsTool = $('#gmap').gmapsTool([object options]);
 
 ## Options
 
@@ -16,7 +15,6 @@ Ce script permet de simplifier l'utilisation des cartes GoogleMaps.
 | &nbsp;&nbsp;&nbsp;&nbsp;zoom                        | integer      | 10                | Niveau de zoom par défaut                                             |
 | &nbsp;&nbsp;&nbsp;&nbsp;minZoom                     | integer      | 7                 | Niveau de zomm minimum                                                |
 | &nbsp;&nbsp;&nbsp;&nbsp;maxZoom                     | integer      | 17                | Niveau de zomm maximum                                                |
-| &nbsp;&nbsp;&nbsp;&nbsp;... (see api documentation) |              |                   |                                                                       |
 | richMarkerOptions                                   | object       | Voir ci-dessous   | Options à passer à la librarie RichMarker                             |
 | &nbsp;&nbsp;&nbsp;&nbsp;draggable                   | boolean      | false             | Option du drag&drop                                                   |
 | &nbsp;&nbsp;&nbsp;&nbsp;shadow                      | string       | 'none'            | Option des ombres                                                     |
@@ -24,7 +22,6 @@ Ce script permet de simplifier l'utilisation des cartes GoogleMaps.
 | fullscreen                                          | boolean      | false             | Permet de désactiver le zoom au scroll quand la map est en fullscreen |
 
 * Options obligatoires.
-
 
 ## Méthodes classiques
 
@@ -41,27 +38,29 @@ Ce script permet de simplifier l'utilisation des cartes GoogleMaps.
 | getInfoWindow | -                                             | Récupére l'infoWindow courante                                     |
 | getLayers     | -                                             | Récupération de tous les calques                                   |
 
+### Exemple
+
+    var map = $('#gmap').gmapsTool({
+        map: {center: [46.1620606, -1.1765508]}
+    });
+    
+    map.init();
+    
+    map.setStyles('style.json');
+
 
 ## Gestion des marqueurs et clusters
 
 ### Méthode
 
-    setMarkers(markers, [options])
+    setMarkers(array markers, [object options])
 
 ### Markers
 
-**markers** *array* Liste des marqueurs à ajouter
-
-*Options du marqueur :*
-* **position**: [Lat, Lng] ou 'lat,lng'
-* **content**: Objet jQuery ou chaine html (si carte statique, il faut que le marqueur soit une image PNG et accessible en url aboslue)
-* **infoWindow**: Objet jQuery ou chaine html (optionnel)
-
-    var markers = [
-        {position: [46.1620606, -1.1765508], content: $('span', {html: '<svg/>'}) },
-        {position: '46.021044,-0.8681477', content: '<span class="icon icon--map"></span>'},
-        {position: [46.1620606, -1.1765508], content: $('span', {html: '<svg/>'}), infoWindow: 'Contenu de la popup' },
-    ];
+| Option     | Type  | Description                                                                                                                                      |
+| position   | mixed | Position du marqueur : [Lat, Lng] ou 'lat,lng'                                                                                                   |
+| content    | mixed | Affichage du marqueur : Objet jQuery ou chaine html (si carte statique, il faut que le marqueur soit une image PNG et accessible en url aboslue) |
+| infoWindow | mixed | Permet d'ajouter une infoWindow : Objet jQuery ou chaine html (optionnel)                                                                        |
 
 ### Options
 
@@ -85,22 +84,29 @@ Ce script permet de simplifier l'utilisation des cartes GoogleMaps.
 | onAdd                                                       | function | undefined            | Callback une fois un marqueur ajouté                                         |
 | onComplete                                                  | function | undefined            | Callback une fois tous les marqueurs ajoutés                                 |
 
+### Exemple
+
+    var map = $('#gmap').gmapsTool({
+        map: {center: [46.1620606, -1.1765508]}
+    });
+    
+    map.setMarkers([
+        {position: [46.1620606, -1.1765508], content: $('span', {html: '<svg/>'}) },
+        {position: '46.021044,-0.8681477', content: '<span class="icon icon--map"></span>'},
+        {position: [46.1620606, -1.1765508], content: $('span', {html: '<svg/>'}), infoWindow: 'Contenu de la popup' },
+    ]);
+
 
 ## Gestion des calques KML
 
 ### Méthode
 
-    setLayers(layers, [options])
+    setLayers(array layers, [object options])
 
 ### Layers
 
-**layers** *array* Liste des calques à ajouter
-
-Chaque calque doit avoir au moins l'option **path**
-
-    var layers = [
-        {path: 'http://site.com/example.kml'}
-    ];
+| Option | Type   | Description                           |
+| path   | string | URL absolue d'un calque au format KML |
 
 ### Options
 
@@ -109,6 +115,16 @@ Chaque calque doit avoir au moins l'option **path**
 | onClick, onDefaultviewport_changed, onStatus_changed | function | undefined         | Callback GoogleMaps                        |
 | onAdd                                                | function | undefined         | Callback une fois le calque ajouté         |
 | onComplete                                           | function | undefined         | Callback une fois tous les calques ajoutés |
+
+### Exemple
+
+    var map = $('#gmap').gmapsTool({
+        map: {center: [46.1620606, -1.1765508]}
+    });
+    
+    map.setLayers([
+        {path: 'http://site.com/example.kml'}
+    ]);
 
 
 ## Contrôles personnalisés
@@ -131,6 +147,19 @@ Chaque calque doit avoir au moins l'option **path**
 | &nbsp;&nbsp;&nbsp;&nbsp;out               | object   | undefined         | Élément jQuery pour dézommer                               |
 | &nbsp;&nbsp;&nbsp;&nbsp;onClick           | function | undefined         | Callback lors du clique sur un zoom                        |
 
+### Exemple
+
+    var map = $('#gmap').gmapsTool({
+        map: {center: [46.1620606, -1.1765508]}
+    });
+    
+    map.setControls({
+        'zoom': {
+            'in': $('#zoom-in'),
+            'out': $('#zoom-out')
+        }
+    });
+
 
 ## Carte statique (en image)
 
@@ -145,10 +174,21 @@ Chaque calque doit avoir au moins l'option **path**
 | size                               | string  | '300x300'         | Taille de l'image                             |
 | scale                              | integer | 2                 | Indice multiplicateur de la taille de l'image |
 | maptype                            | string  | 'roadmap'         | Type de rendu                                 |
-| ... (see static api documentation) |         |                   |                                               |
 
 ### Particularité
 
 La carte statique fonctionne à l'inverse de la carte js. On doit d'abord définir les options avant de l'initialiser.
 Si on veut personaliser la carte, il faut appeler *setStyles()* en dernier. Cette dernière s'occupera d'initialiser la carte une fois les styles récupérés.
 Pour que la carte fonctionne, il faut obligatoirement définir l'option *apiKey*.
+
+### Exemple
+
+    var map = $('#gmap').gmapsTool({
+        map: {center: [46.1620606, -1.1765508]}
+    });
+    
+    map.setStatic({
+        size: '600x300'
+    });
+    
+    map.init();
