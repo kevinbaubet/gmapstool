@@ -79,3 +79,10 @@ h2 {
 .gmapstool-control + .gmapstool-control {
     bottom: 85px;
 }
+
+.marker.l-window {
+    cursor: pointer;
+}
+.map-popup {
+    min-width: 150px;
+}

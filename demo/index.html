@@ -21,28 +21,33 @@
                     mapLayers: $('#gmap-layers'),
                     mapCustom: $('#gmap-custom'),
                     mapCustomControls: $('#gmap-custom-controls'),
+                    mapInfoWindow: $('#gmap-info-window'),
                     mapStatic: $('#gmap-static')
                 };
 
                 /**
                  * Classique
                  */
-                var gmapClassic = elements.mapClassic.gmapsTool({
-                    center: center
+                var mapClassic = elements.mapClassic.gmapsTool({
+                    map: {
+                        center: center
+                    }
                 });
-                gmapClassic.init();
+                mapClassic.init();
 
                 /**
                  * Marqueurs
                  */
-                var gmapMarkers = elements.mapMarkers.gmapsTool({
-                    center: center
+                var mapMarkers = elements.mapMarkers.gmapsTool({
+                    map: {
+                        center: center
+                    }
                 });
-                gmapMarkers.init();
+                mapMarkers.init();
 
                 var markerIcon1 = $('<span>', {
                     'class': 'marker marker--icon',
-                    html: '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24"><path fill="#ff5a60" d="M12 0c-3.148 0-6 2.553-6 5.702 0 3.148 2.602 6.907 6 12.298 3.398-5.391 6-9.15 6-12.298 0-3.149-2.851-5.702-6-5.702zm0 8c-1.105 0-2-.895-2-2s.895-2 2-2 2 .895 2 2-.895 2-2 2zm4 14.5c0 .828-1.79 1.5-4 1.5s-4-.672-4-1.5 1.79-1.5 4-1.5 4 .672 4 1.5z"/></svg>'
+                    html: '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24"><path fill="#ff5a60" d="M12 0C8.852 0 6 2.553 6 5.702 6 8.85 8.602 12.61 12 18c3.398-5.39 6-9.15 6-12.298C18 2.552 15.15 0 12 0zm0 8c-1.105 0-2-.895-2-2s.895-2 2-2 2 .895 2 2-.895 2-2 2zm4 14.5c0 .828-1.79 1.5-4 1.5s-4-.672-4-1.5S9.79 21 12 21s4 .672 4 1.5z"/></svg>'
                 });
                 var markerIcon2 = $('<span>', {
                     'class': 'marker marker--icon',
@@ -57,7 +62,7 @@
                     {position: [46.1620606, -1.1765508], content: markerIcon2},
                     {position: [46.021044, -0.8681477], content: markerIcon3}
                 ];
-                gmapMarkers.setMarkers(markers, {
+                mapMarkers.setMarkers(markers, {
                     cluster: true,
                     onClick: function() {
                         console.log(this);
@@ -67,21 +72,25 @@
                 /**
                  * Layers
                  */
-                var gmapLayers = elements.mapLayers.gmapsTool({
-                    center: center
+                var mapLayers = elements.mapLayers.gmapsTool({
+                    map: {
+                        center: center
+                    }
                 });
-                gmapLayers.init();
+                mapLayers.init();
 
                 var layers = [
                     {path: 'http://kevinbaubet.fr/js/gmapstool/demo/kml/example.kml'}
                 ];
-                gmapLayers.setLayers(layers);
+                mapLayers.setLayers(layers);
 
                 /**
                  * Personnalisée
                  */
                 elements.mapCustom.gmapsTool({
-                    center: center
+                    map: {
+                        center: center
+                    }
                 })
                     .init()
                     .setStyles('../demo/style.json')
@@ -93,21 +102,53 @@
                     });
 
                 /**
+                 * Info Window
+                 */
+                var windowContent = $('<div>', {
+                    'class': 'map-popup',
+                    html: '<h2>Titre</h2> <p>Contenu</p>'
+                });
+                var markerInfoWindow = markerIcon1.clone();
+                markerInfoWindow.addClass('l-window');
+
+                var mapInfoWindow = elements.mapInfoWindow.gmapsTool({
+                    map: {
+                        center: center
+                    }
+                });
+
+                mapInfoWindow.init();
+
+                mapInfoWindow.setMarkers([
+                    {position: center, content: markerInfoWindow, infoWindow: windowContent}
+                ], {
+                    onInfoWindowOpen: function () {
+                        console.log('infoWindow open');
+                    },
+                    onInfoWindowClose: function () {
+                        console.log('infoWindow close');
+                    }
+                });
+
+                /**
                  * Static
                  */
-                elements.mapStatic.gmapsTool({
-                    center: center
-                }, {
+                var mapStatic = elements.mapStatic.gmapsTool({
                     apiKey: '',
-                    type: 'staticmap',
-                    staticOptions: {
-                        size: '674x380'
+                    map: {
+                        center: center
                     }
-                })
-                    .setMarkers([
-                        {position: center, content: 'http://kevinbaubet.fr/js/gmapstool/demo/images/marker.png'}
-                    ])
-                    .init(); // or .setStyles('../demo/style.json');
+                });
+
+                mapStatic.setStatic({
+                    size: '674x380'
+                });
+
+                mapStatic.setMarkers([
+                    {position: center, content: 'http://kevinbaubet.fr/js/gmapstool/demo/images/marker.png'}
+                ]);
+
+                mapStatic.init(); // or mapStatic.setStyles('../demo/style.json');
             });
         </script>
     </head>
@@ -137,6 +178,11 @@
                     <button class="gmapstool-control control-zoom-in">+</button>
                     <button class="gmapstool-control control-zoom-out">-</button>
                 </nav>
+            </div>
+
+            <div class="demo-item">
+                <h2>Carte avec une infoWindow</h2>
+                <div id="gmap-info-window" class="gmapstool-gmapWrapper"></div>
             </div>
 
             <div class="demo-item">

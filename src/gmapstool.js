@@ -3,27 +3,26 @@
  *
  * Permet de simplifier l'utilisation des cartes GoogleMaps
  *
- * @param jQuery object element     Conteneur GoogleMaps
- * @param object        gmapOptions Options GoogleMaps
- * @param object        options     Options GmapsTool
+ * @param jQuery object element     Conteneur de la carte
+ * @param object        options     Options utilisateur
  */
 (function ($) {
     'use strict';
 
-    $.GmapsTool = function (element, gmapOptions, options) {
+    $.GmapsTool = function (element, options) {
         // Éléments
         this.elements = {
-            gmapId: element
+            container: element
         };
 
         // Config
-        $.extend(true, (this.gmapOptions = {}), $.GmapsTool.defaults.gmapOptions, gmapOptions);
         $.extend(true, (this.settings = {}), $.GmapsTool.defaults, options);
-        delete this.settings.gmapOptions;
 
         // Variables
         this.gmap;
         this.markers = [];
+        this.markersOptions = {};
+        this.infoWindow;
         this.layers  = [];
         this.pathAPI = 'https://maps.googleapis.com/maps/api';
         this.style   = false;
@@ -32,7 +31,7 @@
     };
 
     $.GmapsTool.defaults = {
-        gmapOptions: {
+        map: {
             center : undefined,
             zoom   : 10,
             minZoom: 7,
@@ -42,8 +41,8 @@
         fullscreen: false,
         type      : 'js',
         staticOptions: {
-            scale  : 2,
             size   : '300x300',
+            scale  : 2,
             maptype: 'roadmap'
         },
         richMarkerOptions: {
@@ -60,6 +59,9 @@
                 borderWidth: 1,
                 borderColor: '#fff'
             }
+        },
+        infoWindowOptions: {
+            pixelOffset: [0, -30]
         }
     };
 
@@ -71,14 +73,14 @@
          */
         prepareOptions: function () {
             // Élément
-            if (this.elements.gmapId.length === 0) {
+            if (this.elements.container.length === 0) {
                 this.setLog('error', 'Selector not found');
                 return false;
             }
 
             // Center
-            if (this.gmapOptions.center !== undefined) {
-                this.gmapOptions.center = this.getLatLng(this.gmapOptions.center);
+            if (this.settings.map.center !== undefined) {
+                this.settings.map.center = this.getLatLng(this.settings.map.center);
             } else {
                 this.setLog('error', 'Missing center parameter');
                 return false;
@@ -86,7 +88,7 @@
 
             // Fullscreen
             if (this.settings.fullscreen) {
-                this.gmapOptions.scrollwheel = false;
+                this.settings.map.scrollwheel = false;
             }
 
             // Static
@@ -109,9 +111,22 @@
                     }
 
                 } else {
-                    this.gmap = new google.maps.Map(this.elements.gmapId[0], this.gmapOptions);
+                    this.gmap = new google.maps.Map(this.elements.container[0], this.settings.map);
                 }
             }
+
+            return this;
+        },
+
+        /**
+         * Options pour une carte en type statique
+         *
+         * @param options
+         */
+        setStatic: function (options) {
+            this.settings.type = 'staticmap';
+
+            $.extend(true, this.settings.staticOptions, options);
 
             return this;
         },
@@ -124,7 +139,7 @@
 
             // Options
             var options = {};
-            $.extend(true, options, self.gmapOptions, self.settings.staticOptions);
+            $.extend(true, options, self.settings.map, self.settings.staticOptions);
             options.key = self.settings.apiKey;
             delete options.minZoom;
             delete options.maxZoom;
@@ -148,7 +163,7 @@
                 width : sizeParts[0],
                 height: sizeParts[1],
                 alt   : ''
-            }).appendTo(self.elements.gmapId);
+            }).appendTo(self.elements.container);
 
             return self;
         },
@@ -167,7 +182,7 @@
         /**
          * Ajout des options à la carte
          *
-         * @param object options Options à ajouter
+         * @param object options Options provenant de l'API Google maps
          */
         setMapOptions: function (options) {
             this.getMap().setOptions(options);
@@ -189,38 +204,43 @@
                 self.settings.staticOptions.markers = '';
 
                 $.each(markers, function (i, marker) {
-                    self.settings.staticOptions.markers += encodeURIComponent('icon:' + marker.content) + '|' + marker.position.join(',');
+                    if (typeof marker.content !== 'string' || (typeof marker.content === 'string' && marker.content.indexOf('http') === -1)) {
+                        self.setLog('error', 'Marker content must be online and must be an PNG image.');
+                        return;
+                    }
+
+                    self.settings.staticOptions.markers += 'icon:' + encodeURIComponent(marker.content) + '|' + marker.position.join(',');
                 });
 
             } else {
                 self.bounds = new google.maps.LatLngBounds();
 
                 // Prevent options
-                options = options || {};
-                if (options.centerBounds === undefined) {
-                    options.centerBounds = true;
+                self.markersOptions = options;
+                if (self.markersOptions.centerBounds === undefined) {
+                    self.markersOptions.centerBounds = true;
                 }
 
                 if (self.prepareMarkersOptions(markers)) {
                     if (markers.length) {
                         $.each(markers, function (i, marker) {
-                            self.setMarker(marker, options);
+                            self.setMarker(marker);
                         });
                     }
 
                     // Mise à jour de la position en fonction des markers
-                    if (options.centerBounds) {
+                    if (self.markersOptions.centerBounds) {
                         self.setCenter();
                     }
 
                     // Ajout des clusters
-                    if (options.cluster !== undefined && options.cluster === true) {
-                        self.addMarkersClusters(options);
+                    if (self.markersOptions.cluster !== undefined && self.markersOptions.cluster === true) {
+                        self.addMarkersClusters();
                     }
 
                     // Fonction utilisateur
-                    if (options.onComplete !== undefined) {
-                        options.onComplete.call({
+                    if (self.markersOptions.onComplete !== undefined) {
+                        self.markersOptions.onComplete.call({
                             GmapsTool: self,
                             markers  : self.getMarkers(),
                             bounds   : self.bounds
@@ -250,6 +270,21 @@
                 return false;
             }
 
+            // InfoWindow ?
+            var infoWindow = false;
+            $.each(markers, function (i, marker) {
+                if (marker.hasOwnProperty('infoWindow')) {
+                    infoWindow = true;
+                    return;
+                }
+            });
+
+            if (infoWindow && this.settings.infoWindowOptions.pixelOffset !== undefined && this.settings.infoWindowOptions.pixelOffset.length === 2) {
+                this.infoWindow = new google.maps.InfoWindow({
+                    pixelOffset: new google.maps.Size(this.settings.infoWindowOptions.pixelOffset[0], this.settings.infoWindowOptions.pixelOffset[1])
+                });
+            }
+
             return true;
         },
 
@@ -264,10 +299,8 @@
 
         /**
          * Ajout des clusters aux marqueurs
-         *
-         * @param object options Options utilisateur
          */
-        addMarkersClusters: function (options) {
+        addMarkersClusters: function () {
             var self = this;
 
             // Dépendence MarkerClusterer ?
@@ -278,7 +311,7 @@
 
             // Options
             var clusterOptions = {
-                maxZoom: self.gmapOptions.maxZoom - 1
+                maxZoom: self.settings.map.maxZoom - 1
             };
 
             // Cluster svg?
@@ -301,7 +334,7 @@
             }
 
             // Set options
-            $.extend(true, self.settings.clusterOptions, clusterOptions, options.clusterOptions);
+            $.extend(true, self.settings.clusterOptions, clusterOptions, self.markersOptions.clusterOptions);
 
             // Liste des marqueurs
             var markers = [];
@@ -317,31 +350,37 @@
          * Ajout d'un marqueur
          *
          * @param  object marker
-         * @param  object options
-         * @return object marker
+         * @return object
          */
-        setMarker: function (marker, options) {
+        setMarker: function (marker) {
             var self = this;
 
             // Get LatLng
             marker.position = self.getLatLng(marker.position);
 
             // RichMarker
-            $.extend((marker.richMarkerOptions = {}), self.settings.richMarkerOptions, {
+            $.extend(true, (marker.richMarkerOptions = {}), self.settings.richMarkerOptions, {
                 map: self.getMap(),
                 content: ((typeof marker.content === 'object') ? marker.content[0] : marker.content),
                 position: marker.position
-            }, marker.options);
+            });
             marker.richMarker = new RichMarker(marker.richMarkerOptions);
+            
+            // InfoWindow
+            if (marker.hasOwnProperty('infoWindow') && !self.markersOptions.hasOwnProperty('onClick')) {
+                self.markersOptions.onClick = function () {
+                    self.openInfoWindow(this);
+                };
+            }
 
             // Événements Gmap
             var markerEvents = ['click', 'dblclick', 'mouseover', 'mouseout'];
             $.each(markerEvents, function (i, eventName) {
                 var eventOptName = self.formatEventName(eventName);
 
-                if (options[eventOptName] !== undefined) {
+                if (self.markersOptions[eventOptName] !== undefined) {
                     google.maps.event.addListener(marker.richMarker, eventName, function () {
-                        options[eventOptName].call({
+                        self.markersOptions[eventOptName].call({
                             GmapsTool: self,
                             marker: marker,
                             event: this
@@ -355,14 +394,71 @@
             self.markers.push(marker);
 
             // Fonction utilisateur
-            if (options.onAdd !== undefined) {
-                options.onAdd.call({
+            if (self.markersOptions.onAdd !== undefined) {
+                self.markersOptions.onAdd.call({
                     GmapsTool: self,
                     marker: marker
                 });
             }
 
             return marker;
+        },
+
+        /**
+         * InfoWindow open/close
+         */
+        openInfoWindow: function (event) {
+            var self = event.GmapsTool || this;
+
+            self.closeInfoWindow();
+
+            if (event.marker.infoWindow.length) {
+                self.getInfoWindow().setContent((typeof event.marker.infoWindow === 'object') ? event.marker.infoWindow[0].outerHTML : event.marker.infoWindow);
+                self.getInfoWindow().setPosition(event.marker.position);
+                self.getInfoWindow().open(self.getMap());
+                self.getInfoWindow().GmapsTool = self;
+
+                event.marker.content.addClass('is-open');
+                google.maps.event.addListener(self.getInfoWindow(), 'closeclick', self.closeInfoWindow);
+
+                // User callback
+                if (self.markersOptions.onInfoWindowOpen !== undefined) {
+                    self.markersOptions.onInfoWindowOpen.call({
+                        GmapsTool: self,
+                        event: event.event,
+                        marker: event.marker,
+                        infoWindow: self.getInfoWindow()
+                    });
+                }
+            }
+
+            return self;
+        },
+        closeInfoWindow: function() {
+            var self = this.GmapsTool || this;
+
+            if (self.markers.length) {
+                $.each(self.markers, function () {
+                    this.content.removeClass('is-open');
+                });
+            }
+
+            // User callback
+            if (self.markersOptions.onInfoWindowClose !== undefined) {
+                self.markersOptions.onInfoWindowClose.call({
+                    GmapsTool: self,
+                    infoWindow: self.getInfoWindow()
+                });
+            }
+
+            return self;
+        },
+
+        /**
+         * Récupération de l'infoWindow courante
+         */
+        getInfoWindow: function () {
+            return this.infoWindow;
         },
 
         /**
@@ -378,7 +474,7 @@
                 this.getMap().setCenter(this.bounds.getCenter());
 
             } else {
-                this.getMap().setCenter(this.gmapOptions.center);
+                this.getMap().setCenter(this.settings.map.center);
             }
 
             return this;
@@ -663,7 +759,7 @@
         }
     };
 
-    $.fn.gmapsTool = function (gmapOptions, options) {
-        return new $.GmapsTool($(this), gmapOptions, options);
+    $.fn.gmapsTool = function (options) {
+        return new $.GmapsTool($(this), options);
     };
 })(jQuery);

@@ -4,14 +4,14 @@ Ce script permet de simplifier l'utilisation des cartes GoogleMaps.
 
 ## Initialisation
 
-    var GmapsTool = $('#gmap').gmapsTool([gmapOptions], [options]);
+    var GmapsTool = $('#gmap').gmapsTool([options]);
 
 
 ## Options
 
 | Option                            | Type         | Valeur par défaut | Description                                                           |
 |-----------------------------------|--------------|-------------------|-----------------------------------------------------------------------|
-| gmapOptions                       | object       | Voir ci-dessous   | Options à passer à la librarie Gmap                                   |
+| map                               | object       | Voir ci-dessous   | Options à passer à la librarie Gmap                                   |
 | &nbsp;&nbsp;&nbsp;&nbsp;center*   | string/array | undefined         | Positions Lat,Lng pour centrer la carte                               |
 | &nbsp;&nbsp;&nbsp;&nbsp;zoom      | integer      | 10                | Niveau de zoom par défaut                                             |
 | &nbsp;&nbsp;&nbsp;&nbsp;minZoom   | integer      | 7                 | Niveau de zomm minimum                                                |
@@ -19,6 +19,7 @@ Ce script permet de simplifier l'utilisation des cartes GoogleMaps.
 | richMarkerOptions                 | object       | Voir ci-dessous   | Options à passer à la librarie RichMarker                             |
 | &nbsp;&nbsp;&nbsp;&nbsp;draggable | boolean      | false             | Option du drag&drop                                                   |
 | &nbsp;&nbsp;&nbsp;&nbsp;shadow    | string       | 'none'            | Option des ombres                                                     |
+| apiKey                            | string       | undefined         | Ajouter la clé API google maps (utilisé pour les cartes statiques)    |
 | fullscreen                        | boolean      | false             | Permet de désactiver le zoom au scroll quand la map est en fullscreen |
 
 * Options obligatoires.
@@ -29,6 +30,7 @@ Ce script permet de simplifier l'utilisation des cartes GoogleMaps.
 | Méthode       | Arguments                                     | Description                                                        |
 |---------------|-----------------------------------------------|--------------------------------------------------------------------|
 | init          | -                                             | Permet d'initialiser la carte                                      |
+| setOptions    | **options** *object* Options à ajouter        | Permet d'ajouter des options à GmapsTool                           |
 | setMapOptions | **options** *object* Options à ajouter        | Permet d'ajouter des options provenant de la librairie Google Maps |
 | setCenter     | -                                             | Centre la carte                                                    |
 | setStyles     | **path** *string* Chemin vers le fichier json | Permet d'ajouter un style personnalisé                             |
@@ -48,13 +50,15 @@ Ce script permet de simplifier l'utilisation des cartes GoogleMaps.
 
 **markers** *array* Liste des marqueurs à ajouter
 
-Chaque marqueur doit à avoir au moins 2 options :
+Options du marqueur :
 **position**: [Lat, Lng] ou 'lat,lng'
-**content**: Objet jQuery ou chaine html
+**content**: Objet jQuery ou chaine html (si carte statique, il faut que le marqueur soit une image PNG et accessible en url aboslue)
+**infoWindow**: Objet jQuery ou chaine html (optionnel)
 
     var markers = [
         {position: [46.1620606, -1.1765508], content: $('span', {html: '<svg/>'}) },
-        {position: '46.021044,-0.8681477', content: '<span class="icon icon--map"></span>'}
+        {position: '46.021044,-0.8681477', content: '<span class="icon icon--map"></span>'},
+        {position: [46.1620606, -1.1765508], content: $('span', {html: '<svg/>'}), infoWindow: 'Contenu de la popup' },
     ];
 
 ### Options
@@ -70,8 +74,10 @@ Chaque marqueur doit à avoir au moins 2 options :
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;textColor   | string   | '#fff'               | Couleur du texte                                                             |
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderWidth | integer  | 1                    | Taille de la bordure                                                         |
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor | string   | '#fff'               | Couleur de la bordure                                                        |
-| centerBounds                                                | boolean  | true                 | Centre la carte aux limites des positions des marqueurs                      |
+| centerBounds                                                | boolean  | true                 | Centre la carte aux limites des positions des marqueurs                      |                                                  | object   | Voir ci-dessous      | Options pour les infoWindows                                                 |
 | onClick, onDblclick, onMouseover, onMouseout                | function | undefined            | Callback GoogleMaps                                                          |
+| onInfoWindowOpen                                            | function | undefined            | Callback une fois l'infoWindow ouverte                                       |
+| onInfoWindowClose                                           | function | undefined            | Callback une fois l'infoWindow fermée                                        |
 | onAdd                                                       | function | undefined            | Callback une fois un marqueur ajouté                                         |
 | onComplete                                                  | function | undefined            | Callback une fois tous les marqueurs ajoutés                                 |
 
@@ -120,3 +126,25 @@ Chaque calque doit avoir au moins l'option **path**
 | &nbsp;&nbsp;&nbsp;&nbsp;in                | object   | undefined         | Élément jQuery pour zommer                                 |
 | &nbsp;&nbsp;&nbsp;&nbsp;out               | object   | undefined         | Élément jQuery pour dézommer                               |
 | &nbsp;&nbsp;&nbsp;&nbsp;onClick           | function | undefined         | Callback lors du clique sur un zoom                        |
+
+
+## Carte statique (en image)
+
+### Méthode
+
+    setStatic([options])
+
+### Options
+
+| Option                             | Type    | Valeur par défaut | Description                                   |
+|------------------------------------|---------|-------------------|-----------------------------------------------|
+| size                               | string  | '300x300'         | Taille de l'image                             |
+| scale                              | integer | 2                 | Indice multiplicateur de la taille de l'image |
+| maptype                            | string  | 'roadmap'         | Type de rendu                                 |
+| ... (see static api documentation) |         |                   |                                               |
+
+### Particularité
+
+La carte statique fonctionne à l'inverse de la carte js. On doit d'abord définir les options avant de l'initialiser.
+Si on veut personaliser la carte, il faut appeler *setStyles()* en dernier. Cette dernière s'occupera d'initialiser la carte une fois les styles récupérés.
+Pour que la carte fonctionne, il faut obligatoirement définir l'option *apiKey*.
