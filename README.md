@@ -25,18 +25,19 @@ Simplifie l'utilisation des cartes GoogleMaps.
 
 ## Méthodes classiques
 
-| Méthode       | Arguments                                     | Description                                              |
-|---------------|-----------------------------------------------|----------------------------------------------------------|
-| init          | -                                             | Initialise la carte                                      |
-| setOptions    | **options** *object* Options à ajouter        | Ajoute des options à GmapsTool                           |
-| setMapOptions | **options** *object* Options à ajouter        | Ajoute des options provenant de la librairie Google Maps |
-| setCenter     | -                                             | Centre la carte                                          |
-| setStyles     | **path** *string* Chemin vers le fichier json | Ajoute un style personnalisé                             |
-| getMap        | -                                             | Récupère l'objet GoogleMaps                              |
-| getLatLng     | **position** *mixed* Positions 'Lat, Lng'     | Récupère la position en LatLng par GoogleMaps            |
-| getMarkers    | -                                             | Récupère tous les marqueurs                              |
-| getInfoWindow | -                                             | Récupère l'infoWindow courante                           |
-| getLayers     | -                                             | Récupère tous les calques                                |
+| Méthode       | Arguments                                                                           | Description                                              |
+|---------------|-------------------------------------------------------------------------------------|----------------------------------------------------------|
+| init          | -                                                                                   | Initialise la carte                                      |
+| setOptions    | **options** *object* Options à ajouter                                              | Ajoute des options à GmapsTool                           |
+| setMapOptions | **options** *object* Options à ajouter                                              | Ajoute des options provenant de la librairie Google Maps |
+| setCenter     | -                                                                                   | Centre la carte                                          |
+| getCenter     | **latlng** *bool* Récupérer la valeur {lat, lng} de Google Maps ? False par défaut. | Retourne la position du centre                           |
+| setStyles     | **path** *string* Chemin vers le fichier json                                       | Ajoute un style personnalisé                             |
+| getMap        | -                                                                                   | Récupère l'objet GoogleMaps                              |
+| getLatLng     | **position** *mixed* Positions 'Lat, Lng'                                           | Récupère la position en LatLng par GoogleMaps            |
+| getMarkers    | -                                                                                   | Récupère tous les marqueurs                              |
+| getInfoWindow | -                                                                                   | Récupère l'infoWindow courante                           |
+| getLayers     | -                                                                                   | Récupère tous les calques                                |
 
 ### Exemple
 
@@ -57,11 +58,11 @@ Simplifie l'utilisation des cartes GoogleMaps.
 
 ### Markers
 
-| Option     | Type  | Description                                                                                                                                      |
-|------------|-------|--------------------------------------------------------------------------------------------------------------------------------------------------|
-| position   | mixed | Position du marqueur : [Lat, Lng] ou 'lat,lng'                                                                                                   |
-| content    | mixed | Affichage du marqueur : Objet jQuery ou chaine html (si carte statique, il faut que le marqueur soit une image PNG et accessible en url aboslue) |
-| infoWindow | mixed | Permet d'ajouter une infoWindow : Objet jQuery ou chaine html (optionnel)                                                                        |
+| Option     | Type  | Description                                                                                                                                                                                        |
+|------------|-------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| position   | mixed | Position du marqueur : [Lat, Lng] ou 'lat,lng'                                                                                                                                                     |
+| content    | mixed | Affichage du marqueur : Objet jQuery ou chaine html (si carte statique, il faut que le marqueur soit une image PNG et accessible en url aboslue. L'image doit aussi être un carré au max 64x64 px) |
+| infoWindow | mixed | Permet d'ajouter une infoWindow : Objet jQuery ou chaine html (optionnel)                                                                                                                          |
 
 ### Options
 

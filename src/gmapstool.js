@@ -19,6 +19,7 @@
         $.extend(true, (this.settings = {}), $.GmapsTool.defaults, options);
 
         // Variables
+        this.center;
         this.gmap;
         this.markers = [];
         this.markersOptions = {};
@@ -80,7 +81,8 @@
 
             // Center
             if (this.settings.map.center !== undefined) {
-                this.settings.map.center = this.getLatLng(this.settings.map.center);
+                this.center = this.settings.map.center;
+                this.settings.map.center = this.getLatLng();
             } else {
                 this.setLog('error', 'Missing center parameter');
                 return false;
@@ -92,8 +94,9 @@
             }
 
             // Static
-            if (this.settings.type === 'staticmap' && this.settings.staticOptions.apiKey === undefined) {
+            if (this.settings.type === 'staticmap' && (this.settings.apiKey === undefined || this.settings.apiKey === '')) {
                 this.setLog('error', 'Missing "apiKey" parameter');
+                return false;
             }
 
             return true;
@@ -205,11 +208,11 @@
 
                 $.each(markers, function (i, marker) {
                     if (typeof marker.content !== 'string' || (typeof marker.content === 'string' && marker.content.indexOf('http') === -1)) {
-                        self.setLog('error', 'Marker content must be online and must be an PNG image.');
+                        self.setLog('error', 'Marker content must be online and must be an PNG image (64x64). E.g: http://site.com/image.png');
                         return;
                     }
 
-                    self.settings.staticOptions.markers += 'icon:' + encodeURIComponent(marker.content) + '|' + marker.position.join(',');
+                    self.settings.staticOptions.markers += 'icon:' + encodeURIComponent(marker.content) + '|' + ((typeof marker.position === 'array') ? marker.position.join(',') : marker.position);
                 });
 
             } else {
@@ -481,10 +484,22 @@
                 this.getMap().setCenter(this.bounds.getCenter());
 
             } else {
-                this.getMap().setCenter(this.settings.map.center);
+                this.getMap().setCenter(this.getCenter(true));
             }
 
             return this;
+        },
+
+        /**
+         * Retourne la position du centre
+         *
+         * @param bool latlng Récupérer la valeur {lat, lng} de Google Maps ? False par défaut.
+         * @return mixed
+         */
+        getCenter: function (latlng) {
+            latlng = latlng || false;
+
+            return (latlng) ? this.settings.map.center : this.center;
         },
 
         /**
@@ -730,6 +745,8 @@
          * @return object si parsable sinon false
          */
         getLatLng: function (position) {
+            position = position || this.getCenter();
+
             if (typeof position === 'string' && position.indexOf(',') !== -1) {
                 position = position.split(',');
             }
