@@ -15,9 +15,6 @@ Simplifie l'utilisation des cartes GoogleMaps.
 | &nbsp;&nbsp;&nbsp;&nbsp;zoom                        | integer      | 10                | Niveau de zoom par défaut                                             |
 | &nbsp;&nbsp;&nbsp;&nbsp;minZoom                     | integer      | 7                 | Niveau de zomm minimum                                                |
 | &nbsp;&nbsp;&nbsp;&nbsp;maxZoom                     | integer      | 17                | Niveau de zomm maximum                                                |
-| richMarkerOptions                                   | object       | Voir ci-dessous   | Options à passer à la librarie RichMarker                             |
-| &nbsp;&nbsp;&nbsp;&nbsp;draggable                   | boolean      | false             | Option du drag&drop                                                   |
-| &nbsp;&nbsp;&nbsp;&nbsp;shadow                      | string       | 'none'            | Option des ombres                                                     |
 | apiKey                                              | string       | undefined         | Ajouter la clé API google maps (utilisé pour les cartes statiques)    |
 | fullscreen                                          | boolean      | false             | Permet de désactiver le zoom au scroll quand la map est en fullscreen |
 
@@ -68,6 +65,7 @@ Simplifie l'utilisation des cartes GoogleMaps.
 
 | Option                                                      | Type     | Valeur par défaut    | Description                                                                  |
 |-------------------------------------------------------------|----------|----------------------|------------------------------------------------------------------------------|
+| centerBounds                                                | boolean  | true                 | Centre la carte aux limites des positions des marqueurs                      |                                                  | object   | Voir ci-dessous      | Options pour les infoWindows                                                 |
 | cluster                                                     | boolean  | false                | Activation des clusters (necessite la librairie MarkerClusterer)             |
 | clusterOptions                                              | object   | Voir ci-dessous      | Permet de définir les options de la librairie MarkerClusterer                |
 | &nbsp;&nbsp;&nbsp;&nbsp;svg                                 | object   | Voir ci-dessous      | Si spécifié, les clusters seront affichés en SVG                             |
@@ -77,10 +75,12 @@ Simplifie l'utilisation des cartes GoogleMaps.
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;textColor   | string   | '#fff'               | Couleur du texte                                                             |
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderWidth | integer  | 1                    | Taille de la bordure                                                         |
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor | string   | '#fff'               | Couleur de la bordure                                                        |
-| centerBounds                                                | boolean  | true                 | Centre la carte aux limites des positions des marqueurs                      |                                                  | object   | Voir ci-dessous      | Options pour les infoWindows                                                 |
 | onClick, onDblclick, onMouseover, onMouseout                | function | undefined            | Callback GoogleMaps                                                          |
 | infoWindowOptions                                           | object   | Voir ci-dessous      | Permet de définir les options pour créer une infoWindow                      |
 | &nbsp;&nbsp;&nbsp;&nbsp;pixelOffset                         | array    | [0, -30]             | Position de l'infoWindow par rapport au marqueur                             |
+| richMarkerOptions                                           | object   | Voir ci-dessous      | Options à passer à la librarie RichMarker                                    |
+| &nbsp;&nbsp;&nbsp;&nbsp;draggable                           | boolean  | false                | Option du drag&drop                                                          |
+| &nbsp;&nbsp;&nbsp;&nbsp;shadow                              | string   | 'none'               | Option des ombres                                                            |
 | onInfoWindowOpen                                            | function | undefined            | Callback une fois l'infoWindow ouverte                                       |
 | onInfoWindowClose                                           | function | undefined            | Callback une fois l'infoWindow fermée                                        |
 | onAdd                                                       | function | undefined            | Callback une fois un marqueur ajouté                                         |
