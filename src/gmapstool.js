@@ -161,15 +161,22 @@
 
                 optionIndex++;
             });
-
+            
             // Render
-            var sizeParts = self.settings.staticOptions.size.split('x');
-            $('<img>', {
-                src   : path,
-                width : sizeParts[0],
-                height: sizeParts[1],
-                alt   : ''
-            }).appendTo(self.elements.container);
+            $.ajax(path)
+                .done(function () {
+                    var sizeParts = self.settings.staticOptions.size.split('x');
+
+                    $('<img>', {
+                        src   : path,
+                        width : sizeParts[0],
+                        height: sizeParts[1],
+                        alt   : ''
+                    }).appendTo(self.elements.container);
+                })
+                .fail(function (response) {
+                    self.setLog('error', response.responseText);
+                });
 
             return self;
         },
