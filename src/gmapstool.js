@@ -386,8 +386,7 @@
             }
 
             // Événements Gmap
-            var markerEvents = ['click', 'dblclick', 'mouseover', 'mouseout'];
-            $.each(markerEvents, function (i, eventName) {
+            $.each(['click', 'dblclick', 'mouseover', 'mouseout'], function (i, eventName) {
                 var eventOptName = self.formatEventName(eventName);
 
                 if (self.settings.markersOptions[eventOptName] !== undefined) {
@@ -429,7 +428,32 @@
                 self.getInfoWindow().setPosition(event.marker.position);
                 self.getInfoWindow().open(self.getMap());
                 self.getInfoWindow().gmapsTool = self;
+                self.getInfoWindow().elements = {
+                    infowindow: $(self.getMap().getDiv()).find('.gm-style-iw')
+                };
 
+                // Add classes
+                if (self.getInfoWindow().elements.infowindow.length) {
+                    // Wrapper
+                    self.getInfoWindow().elements.wrapper = self.getInfoWindow().elements.infowindow.parent();
+                    if (self.getInfoWindow().elements.wrapper.length) {
+                        self.getInfoWindow().elements.wrapper.addClass('gm-style-wrapper');
+                    }
+
+                    // Background
+                    self.getInfoWindow().elements.background = self.getInfoWindow().elements.infowindow.prev();
+                    if (self.getInfoWindow().elements.background.length) {
+                        self.getInfoWindow().elements.background.addClass('gm-style-background');
+                    }
+
+                    // Close
+                    self.getInfoWindow().elements.close = self.getInfoWindow().elements.infowindow.next();
+                    if (self.getInfoWindow().elements.close.length) {
+                        self.getInfoWindow().elements.close.addClass('gm-style-close');
+                    }
+                }
+
+                // Events
                 event.marker.content.addClass('is-open');
                 google.maps.event.addListener(self.getInfoWindow(), 'closeclick', self.closeInfoWindow);
 
@@ -579,8 +603,7 @@
             layer.layer = new google.maps.KmlLayer(options);
 
             // Événements Layer
-            var layerEvents = ['click', 'defaultviewport_changed', 'status_changed'];
-            $.each(layerEvents, function (i, eventName) {
+            $.each(['click', 'dblclick', 'mouseover', 'mouseout'], function (i, eventName) {
                 var eventOptName = self.formatEventName(eventName);
 
                 if (options[eventOptName] !== undefined) {
@@ -619,7 +642,7 @@
 
             $.getJSON(path)
                 .fail(function () {
-                    self.setLog('error', 'Json file not found');
+                    self.setLog('error', 'Json file not found.');
                 })
                 .done(function (style) {
                     if (self.settings.type === 'staticmap') {

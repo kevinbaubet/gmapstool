@@ -1,6 +1,6 @@
 {
   "name": "gmapstool",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "main": "./dist/gmapstool.min.js",
   "repository": "https://github.com/kevinbaubet/gmapstool.git",
   "author": "Kévin Baubet <contact@kevinbaubet.fr>",
