@@ -437,19 +437,19 @@
                     // Wrapper
                     self.getInfoWindow().elements.wrapper = self.getInfoWindow().elements.infowindow.parent();
                     if (self.getInfoWindow().elements.wrapper.length) {
-                        self.getInfoWindow().elements.wrapper.addClass('gm-style-wrapper');
+                        self.getInfoWindow().elements.wrapper.addClass('gm-style-iw-wrapper');
                     }
 
                     // Background
                     self.getInfoWindow().elements.background = self.getInfoWindow().elements.infowindow.prev();
                     if (self.getInfoWindow().elements.background.length) {
-                        self.getInfoWindow().elements.background.addClass('gm-style-background');
+                        self.getInfoWindow().elements.background.addClass('gm-style-iw-background');
                     }
 
                     // Close
                     self.getInfoWindow().elements.close = self.getInfoWindow().elements.infowindow.next();
                     if (self.getInfoWindow().elements.close.length) {
-                        self.getInfoWindow().elements.close.addClass('gm-style-close');
+                        self.getInfoWindow().elements.close.addClass('gm-style-iw-close');
                     }
                 }
 
