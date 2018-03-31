@@ -5,7 +5,7 @@
         <title>GmapsTool</title>
         <link rel="stylesheet" href="demo.css" />
 
-        <script src="../node_modules/jquery/dist/jquery.min.js" ></script>
+        <script src="../node_modules/jquery/dist/jquery.min.js"></script>
 
         <script src="https://maps.googleapis.com/maps/api/js?key="></script>
         <script src="../vendor/markerclusterer.min.js"></script>
@@ -22,7 +22,8 @@
                     mapCustom: $('#gmap-custom'),
                     mapCustomControls: $('#gmap-custom-controls'),
                     mapInfoWindow: $('#gmap-info-window'),
-                    mapStatic: $('#gmap-static')
+                    mapStatic: $('#gmap-static'),
+                    mapRoute: $('#gmap-route')
                 };
 
                 /**
@@ -62,6 +63,7 @@
                     {position: [46.1620606, -1.1765508], content: markerIcon2},
                     {position: [46.021044, -0.8681477], content: markerIcon3}
                 ];
+
                 mapMarkers.setMarkers(markers, {
                     cluster: true,
                     onClick: function() {
@@ -149,6 +151,34 @@
                 ]);
 
                 mapStatic.init(); // or mapStatic.setStyles('../demo/style.json');
+
+                /**
+                 * Itinéraire
+                 */
+                var mapRoute = elements.mapRoute.gmapsTool({
+                    map: {
+                        center: center
+                    }
+                });
+
+                mapRoute.init();
+
+                var mapRouteMarkers = [
+                    {position: center, content: markerIcon1},
+                    {position: [46.1620606, -1.1765508], content: markerIcon2}
+                ];
+                mapRoute.setMarkers(mapRouteMarkers);
+
+                mapRoute.setRoute({
+                    origin: mapRouteMarkers[0].position,
+                    destination: mapRouteMarkers[1].position
+                });
+
+                mapRoute.setTrace();
+
+                mapRoute.getDistance(function () {
+                    console.log(this.gmapsTool.settings.routeOptions.travelMode + ': ' + this.distance.text + ' in ' + this.duration.text);
+                });
             });
         </script>
     </head>
@@ -188,6 +218,11 @@
             <div class="demo-item">
                 <h2>Carte statique (en image)</h2>
                 <div id="gmap-static" class="gmapstool-gmapWrapper"></div>
+            </div>
+
+            <div class="demo-item">
+                <h2>Carte avec un itinéraire</h2>
+                <div id="gmap-route" class="gmapstool-gmapWrapper"></div>
             </div>
         </div>
     </body>

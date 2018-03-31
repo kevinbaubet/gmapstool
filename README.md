@@ -31,7 +31,7 @@ Simplifie l'utilisation des cartes GoogleMaps.
 | getCenter     | **latlng** *bool* Récupérer la valeur {lat, lng} de Google Maps ? False par défaut. | Retourne la position du centre                           |
 | setStyles     | **path** *string* Chemin vers le fichier json                                       | Ajoute un style personnalisé                             |
 | getMap        | -                                                                                   | Récupère l'objet GoogleMaps                              |
-| getLatLng     | **position** *mixed* Positions 'Lat, Lng'                                           | Récupère la position en LatLng par GoogleMaps            |
+| getLatLng     | **position** *mixed* Positions 'lat,lng' ou [lat, lng]                              | Récupère la position en LatLng par GoogleMaps            |
 | getMarkers    | -                                                                                   | Récupère tous les marqueurs                              |
 | getInfoWindow | -                                                                                   | Récupère l'infoWindow courante                           |
 | getLayers     | -                                                                                   | Récupère tous les calques                                |
@@ -195,3 +195,52 @@ Pour que la carte fonctionne, il faut obligatoirement définir l'option *apiKey*
     });
     
     map.init();
+    
+
+## Itinéraire
+
+### Méthode
+
+    setRoute([object options])
+
+### Options
+
+| Option                             | Type    | Valeur par défaut | Description                                      |
+|------------------------------------|---------|-------------------|--------------------------------------------------|
+| origin                             | object  | undefined         | Position d'origine retournée par GoogleMaps      |
+| destination                        | object  | undefined         | Position de destination retournée par GoogleMaps |
+| travelMode                         | string  | 'DRIVING'         | Mode de transport                                |
+
+
+### Sous-méthodes
+
+Une fois l'itinéraire configuré avec setRoute(), on peut tracer l'itinéraire sur le carte et récupérer la distance du trajet.
+
+#### setTrace()
+
+Trace l'itinéraire configuré sur la carte.
+
+#### getDistance(function onSuccess)
+
+Récupère la distance et la durée de l'itinéraire configuré.
+Le résultat est manipulable dans une fonction en paramètre de la méthode.
+
+
+### Exemple
+
+    var map = $('#gmap').gmapsTool({
+        map: {center: [46.1620606, -1.1765508]}
+    });
+    
+    map.init();
+    
+    map.setRoute({
+        origin: map.getCenter(true),
+        destination: map.getLatLng([46.1620606, -1.1765508]),
+    });
+    
+    map.setTrace();
+    
+    map.getDistance(function () {
+        console.log(this);
+    });

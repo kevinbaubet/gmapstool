@@ -19,14 +19,17 @@
         $.extend(true, (this.settings = {}), $.GmapsTool.defaults, options);
 
         // Variables
-        this.center;
-        this.gmap;
+        this.center = undefined;
+        this.gmap = undefined;
         this.markers = [];
         this.markersOptions = {};
-        this.infoWindow;
+        this.infoWindow = undefined;
         this.layers  = [];
         this.pathAPI = 'https://maps.googleapis.com/maps/api';
         this.style   = false;
+        this.directionsDisplay = undefined;
+        this.directionsService = undefined;
+        this.distanceService = undefined;
 
         return this;
     };
@@ -65,6 +68,19 @@
             richMarkerOptions: {
                 draggable: false,
                 shadow   : 'none'
+            }
+        },
+        routeOptions: {
+            origin: undefined,
+            destination: undefined,
+            travelMode: 'DRIVING',
+            displayOptions: {
+                polylineOptions : {
+                    strokeColor : '#303748',
+                    strokeWeight: 4
+                },
+                suppressInfoWindows: true,
+                suppressMarkers    : true
             }
         }
     };
@@ -749,6 +765,104 @@
                                 });
                             }
                         });
+                    }
+                });
+            }
+
+            return self;
+        },
+
+
+        /**
+         * Configure un itinéraire
+         *
+         * @param object options Options utilisateur
+         */
+        setRoute: function (options) {
+            // Options
+            $.extend(true, this.settings.routeOptions, options);
+
+            // Services
+            this.directionsDisplay = new google.maps.DirectionsRenderer(this.settings.routeOptions.displayOptions);
+            this.directionsDisplay.setMap(this.getMap());
+
+            return this;
+        },
+
+        /**
+         * Préparation des options pour un itinéraire
+         *
+         * @return bool
+         */
+        routePrepareOptions: function () {
+            if (this.settings.routeOptions.origin === undefined) {
+                this.setLog('error', 'Missing option "origin".');
+                return false;
+            }
+
+            if (this.settings.routeOptions.destination === undefined) {
+                this.setLog('error', 'Missing option "destination".');
+                return false;
+            }
+
+            return true;
+        },
+
+        /**
+         * Trace l'itinéraire configuré sur la carte
+         */
+        setTrace: function () {
+            var self = this;
+
+            if (self.routePrepareOptions()) {
+                if (self.directionsService === undefined) {
+                    self.directionsService = new google.maps.DirectionsService();
+                }
+
+                self.directionsService.route({
+                    origin     : self.settings.routeOptions.origin,
+                    destination: self.settings.routeOptions.destination,
+                    travelMode : google.maps.TravelMode[self.settings.routeOptions.travelMode]
+                }, function (result, status) {
+                    if (status === google.maps.DirectionsStatus.OK) {
+                        self.directionsDisplay.setDirections(result);
+                    }
+                });
+            }
+
+            return self;
+        },
+
+        /**
+         * Récupère la distance d'un itinéraire configuré
+         *
+         * @param function onSuccess Callback s'il y a un résultat
+         */
+        getDistance: function (onSuccess) {
+            var self = this;
+
+            if (self.routePrepareOptions()) {
+                if (self.distanceService === undefined) {
+                    self.distanceService = new google.maps.DistanceMatrixService;
+                }
+
+                self.distanceService.getDistanceMatrix({
+                    origins     : [self.settings.routeOptions.origin],
+                    destinations: [self.settings.routeOptions.destination],
+                    travelMode  : google.maps.TravelMode[self.settings.routeOptions.travelMode]
+                }, function (result, status) {
+                    if (status === 'OK') {
+                        var success = {
+                            gmapsTool: self,
+                            result   : result,
+                        };
+
+                        if (result.rows[0] !== undefined && result.rows[0].elements[0] !== undefined) {
+                            success.distance = result.rows[0].elements[0].distance;
+                            success.duration = result.rows[0].elements[0].duration;
+                        }
+
+                        onSuccess.call(success);
                     }
                 });
             }
