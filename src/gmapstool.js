@@ -24,6 +24,7 @@
         this.markers = [];
         this.markersOptions = {};
         this.infoWindow = undefined;
+        this.infoWindowTimeout = undefined;
         this.layers  = [];
         this.pathAPI = 'https://maps.googleapis.com/maps/api';
         this.style   = false;
@@ -234,7 +235,7 @@
 
                 $.each(markers, function (i, marker) {
                     if (typeof marker.content !== 'string' || (typeof marker.content === 'string' && marker.content.indexOf('http') === -1)) {
-                        self.setLog('error', 'Marker content must be online and must be an PNG image (64x64). E.g: http://site.com/image.png');
+                        self.setLog('error', 'Marker content must be online and must be an PNG image (64x64). E.g: https://site.com/image.png');
                         return;
                     }
 
@@ -437,37 +438,41 @@
         openInfoWindow: function (event) {
             var self = event.gmapsTool || this;
 
-            self.closeInfoWindow();
+            clearTimeout(self.infoWindowTimeout);
+            self.closeInfoWindow('openclick');
 
             if (event.marker.infoWindow.length) {
                 self.getInfoWindow().setContent((typeof event.marker.infoWindow === 'object') ? event.marker.infoWindow[0].outerHTML : event.marker.infoWindow);
                 self.getInfoWindow().setPosition(event.marker.position);
                 self.getInfoWindow().open(self.getMap());
                 self.getInfoWindow().gmapsTool = self;
-                self.getInfoWindow().elements = {
-                    infowindow: $(self.getMap().getDiv()).find('.gm-style-iw')
-                };
 
-                // Add classes
-                if (self.getInfoWindow().elements.infowindow.length) {
-                    // Wrapper
-                    self.getInfoWindow().elements.wrapper = self.getInfoWindow().elements.infowindow.parent();
-                    if (self.getInfoWindow().elements.wrapper.length) {
-                        self.getInfoWindow().elements.wrapper.addClass('gm-style-iw-wrapper');
-                    }
+                self.infoWindowTimeout = setTimeout(function () {
+                    self.getInfoWindow().elements = {
+                        infowindow: $(self.getMap().getDiv()).find('.gm-style-iw')
+                    };
 
-                    // Background
-                    self.getInfoWindow().elements.background = self.getInfoWindow().elements.infowindow.prev();
-                    if (self.getInfoWindow().elements.background.length) {
-                        self.getInfoWindow().elements.background.addClass('gm-style-iw-background');
-                    }
+                    // Add classes
+                    if (self.getInfoWindow().elements.infowindow.length) {
+                        // Wrapper
+                        self.getInfoWindow().elements.wrapper = self.getInfoWindow().elements.infowindow.parent();
+                        if (self.getInfoWindow().elements.wrapper.length) {
+                            self.getInfoWindow().elements.wrapper.addClass('gm-style-iw-wrapper');
+                        }
 
-                    // Close
-                    self.getInfoWindow().elements.close = self.getInfoWindow().elements.infowindow.next();
-                    if (self.getInfoWindow().elements.close.length) {
-                        self.getInfoWindow().elements.close.addClass('gm-style-iw-close');
+                        // Background
+                        self.getInfoWindow().elements.background = self.getInfoWindow().elements.infowindow.prev();
+                        if (self.getInfoWindow().elements.background.length) {
+                            self.getInfoWindow().elements.background.addClass('gm-style-iw-background');
+                        }
+
+                        // Close
+                        self.getInfoWindow().elements.close = self.getInfoWindow().elements.infowindow.next();
+                        if (self.getInfoWindow().elements.close.length) {
+                            self.getInfoWindow().elements.close.addClass('gm-style-iw-close');
+                        }
                     }
-                }
+                }, 50);
 
                 // Events
                 event.marker.content.addClass('is-open');
@@ -486,7 +491,8 @@
 
             return self;
         },
-        closeInfoWindow: function() {
+        closeInfoWindow: function (context) {
+            context = context || 'closeclick';
             var self = this.gmapsTool || this;
 
             if (self.markers.length) {
@@ -499,6 +505,7 @@
             if (self.settings.markersOptions.onInfoWindowClose !== undefined) {
                 self.settings.markersOptions.onInfoWindowClose.call({
                     gmapsTool: self,
+                    context: context,
                     infoWindow: self.getInfoWindow()
                 });
             }

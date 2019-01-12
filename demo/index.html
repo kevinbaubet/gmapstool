@@ -5,7 +5,7 @@
         <title>GmapsTool</title>
         <link rel="stylesheet" href="demo.css" />
 
-        <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 
         <script src="https://maps.googleapis.com/maps/api/js?key="></script>
         <script src="../vendor/markerclusterer.min.js"></script>
@@ -124,6 +124,12 @@
                 mapInfoWindow.setMarkers([
                     {position: center, content: markerInfoWindow, infoWindow: windowContent}
                 ], {
+                    // onClick: function () {
+                    //     // InfoWindow
+                    //     this.gmapsTool.openInfoWindow(this);
+                    //
+                    //     // Custom actions...
+                    // },
                     onInfoWindowOpen: function () {
                         console.log('infoWindow open');
                     },
@@ -186,43 +192,51 @@
         <div class="page">
             <h1>GMaps Tool</h1>
 
-            <div class="demo-item">
-                <h2>Carte classique</h2>
-                <div id="gmap-classic" class="gmapstool-gmapWrapper"></div>
-            </div>
+            <p>Avant de commencer :</p>
+            <ul>
+                <li>Entrez votre clé GoogleMapsAPI dans le code source de la démo</li>
+                <li>Lisez les messages d'erreurs</li>
+            </ul>
 
-            <div class="demo-item">
-                <h2>Carte avec marqueurs et cluster</h2>
-                <div id="gmap-markers" class="gmapstool-gmapWrapper"></div>
-            </div>
+            <div class="demo-wrapper">
+                <div class="demo-item">
+                    <h2>Carte classique</h2>
+                    <div id="gmap-classic" class="gmapstool-gmapWrapper"></div>
+                </div>
 
-            <div class="demo-item">
-                <h2>Carte avec des calques</h2>
-                <div id="gmap-layers" class="gmapstool-gmapWrapper"></div>
-            </div>
+                <div class="demo-item">
+                    <h2>Carte avec marqueurs et cluster</h2>
+                    <div id="gmap-markers" class="gmapstool-gmapWrapper"></div>
+                </div>
 
-            <div class="demo-item">
-                <h2>Carte personnalisée</h2>
-                <div id="gmap-custom" class="gmapstool-gmapWrapper"></div>
-                <nav id="gmap-custom-controls">
-                    <button class="gmapstool-control control-zoom-in">+</button>
-                    <button class="gmapstool-control control-zoom-out">-</button>
-                </nav>
-            </div>
+                <div class="demo-item">
+                    <h2>Carte avec des calques</h2>
+                    <div id="gmap-layers" class="gmapstool-gmapWrapper"></div>
+                </div>
 
-            <div class="demo-item">
-                <h2>Carte avec une infoWindow</h2>
-                <div id="gmap-info-window" class="gmapstool-gmapWrapper"></div>
-            </div>
+                <div class="demo-item">
+                    <h2>Carte personnalisée</h2>
+                    <div id="gmap-custom" class="gmapstool-gmapWrapper"></div>
+                    <nav id="gmap-custom-controls">
+                        <button class="gmapstool-control control-zoom-in">+</button>
+                        <button class="gmapstool-control control-zoom-out">-</button>
+                    </nav>
+                </div>
 
-            <div class="demo-item">
-                <h2>Carte statique (en image)</h2>
-                <div id="gmap-static" class="gmapstool-gmapWrapper"></div>
-            </div>
+                <div class="demo-item">
+                    <h2>Carte avec une infoWindow</h2>
+                    <div id="gmap-info-window" class="gmapstool-gmapWrapper"></div>
+                </div>
 
-            <div class="demo-item">
-                <h2>Carte avec un itinéraire</h2>
-                <div id="gmap-route" class="gmapstool-gmapWrapper"></div>
+                <div class="demo-item">
+                    <h2>Carte statique (en image)</h2>
+                    <div id="gmap-static" class="gmapstool-gmapWrapper"></div>
+                </div>
+
+                <div class="demo-item">
+                    <h2>Carte avec un itinéraire</h2>
+                    <div id="gmap-route" class="gmapstool-gmapWrapper"></div>
+                </div>
             </div>
         </div>
     </body>

@@ -86,6 +86,19 @@ Simplifie l'utilisation des cartes GoogleMaps.
 | onAdd                                                       | function | undefined            | Callback une fois un marqueur ajouté                                         |
 | onComplete                                                  | function | undefined            | Callback une fois tous les marqueurs ajoutés                                 |
 
+### InfoWindow
+
+Si l'option "onClick" est utilisé, il faudra ouvrir manuellement l'infoWindow avec la méthode openInfoWindow()
+
+    map.setMarkers([...], {
+        onClick: function () {
+            // InfoWindow
+            this.gmapsTool.openInfoWindow(this);
+            
+            // Custom actions...       
+        }
+    });
+
 ### Exemple
 
     var map = $('#gmap').gmapsTool({

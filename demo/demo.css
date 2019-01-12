@@ -40,19 +40,29 @@ h2 {
     text-transform: uppercase;
     font-size: 1.2em;
 }
+p,
+li {
+    color: #fff;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+ul {
+    margin-bottom: 40px;
+}
 
 /* Items */
+.demo-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
 .demo-item {
     position: relative;
-    float: left;
     margin-bottom: 50px;
-    width: 45%;
     padding: 20px;
     background: #fff;
     border-radius: 10px;
-}
-.demo-item:nth-child(2n+1) {
-    margin-left: 4%;
+    width: 46%;
 }
 
 /* Gmaps */
